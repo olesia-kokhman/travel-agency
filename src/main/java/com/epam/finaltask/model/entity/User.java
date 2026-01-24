@@ -2,97 +2,40 @@ package com.epam.finaltask.model.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
-import com.epam.finaltask.model.enums.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.epam.finaltask.model.enums.UserRole;
+import jakarta.persistence.*;
 
 @Entity
-public class User {
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "uk_users_email", columnNames = "email"))
+public class User extends AuditableEntity {
 
-	@Id
-    private UUID id;
+	@Column(name = "name", nullable = false, length = 100)
+    private String name;
 
-    private String username;
+	@Column(name = "surname", nullable = false, length = 100)
+	private String surname;
 
-    private String password;
+	@Column(name = "email", nullable = false)
+	private String email;
 
-    private Role role;
+	@Column(name = "phone_number", nullable = false, length = 25)
+	private String phoneNumber;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tour> tours;
+	@Column(name = "password", nullable = false)
+	private String password;
 
-    private String phoneNumber;
+	@Column(name = "is_active", nullable = false)
+	private boolean active;
 
-    private BigDecimal balance;
+	@Column(name = "balance", nullable = false, precision = 19, scale = 2)
+	private BigDecimal balance = BigDecimal.ZERO;
 
-    private boolean active;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role", nullable = false)
+    private UserRole role;
 
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	public List<Tour> getVouchers() {
-		return tours;
-	}
-
-	public void setVouchers(List<Tour> tours) {
-		this.tours = tours;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public BigDecimal getBalance() {
-		return balance;
-	}
-
-	public void setBalance(BigDecimal balance) {
-		this.balance = balance;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<Order> orders;
     
 }

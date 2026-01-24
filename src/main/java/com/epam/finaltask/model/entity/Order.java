@@ -1,23 +1,34 @@
 package com.epam.finaltask.model.entity;
 
 import com.epam.finaltask.model.enums.OrderStatus;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
+@Table(name = "orders", uniqueConstraints = @UniqueConstraint(name = "uk_orders_order_number", columnNames = "order_number"))
 public class Order extends AuditableEntity {
 
-    private Integer orderNumber;
-    private BigDecimal totalPrice;
-    private OrderStatus orderStatus;
+    @Column(name = "order_number", nullable = false, updatable = false)
+    private String orderNumber;
+
+    @Column(name = "total_amount", nullable = false, precision = 19, scale = 2)
+    private BigDecimal totalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private OrderStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Payment payment;
-    private Review review;
-
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
-    private Set<ExtraService> chosenExtraServices;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<OrderExtra> extras;
 
 }
