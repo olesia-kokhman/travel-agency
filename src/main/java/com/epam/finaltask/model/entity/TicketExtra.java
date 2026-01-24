@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class TicketExtra extends AuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "travel_ticket_id", nullable = false)
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
     @Column(name = "item_number", nullable = false, updatable = false)

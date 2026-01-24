@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="202601024_001_01_create-enums" author="olesia">
+        <sql dbms="postgresql">
+            CREATE TYPE user_role AS ENUM ('ADMIN','MANAGER','USER');
+            CREATE TYPE order_status AS ENUM ('REGISTERED','PAID','CANCELED');
+            CREATE TYPE payment_method AS ENUM ('CARD','TRANSFER','CASH');
+            CREATE TYPE payment_status AS ENUM ('NEW','PENDING','SUCCESS','FAILED','CANCELED','REFUNDED');
+            CREATE TYPE tour_type AS ENUM ('REST','EXCURSION','SHOPPING');
+            CREATE TYPE transfer_type AS ENUM ('CAR','PLANE','SHIP');
+            CREATE TYPE hotel_type AS ENUM ('THREE','FOUR','FIVE');
+            CREATE TYPE extra_service_type AS ENUM ('EXCURSION','TRANSFER','INSURANCE','MEAL');
+        </sql>
+    </changeSet>
+
+    <changeSet id="202601024_001_02_create-tours" author="olesia">
+
+        <createTable tableName="tours">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="long_description" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="short_description" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="price" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="country" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="city" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_hot" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="capacity" type="int"/>
+
+            <column name="tour_type" type="tour_type">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="transfer_type" type="transfer_type">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="hotel_type" type="hotel_type">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="check_in_datetime" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="check_out_datetime" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_03_create-tour-extras" author="olesia">
+        <createTable tableName="tour_extras">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="short_description" type="varchar(255)"/>
+
+            <column name="long_description" type="text">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="price" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="capacity" type="int"/>
+
+            <column name="type" type="extra_service_type">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="tour_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_tour_extras_tour"
+                baseTableName="tour_extras"
+                baseColumnNames="tour_id"
+                referencedTableName="tours"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_04_create-users" author="olesia">
+
+        <createTable tableName="users">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="surname" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="phone_number" type="varchar(25)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="balance" type="numeric(19,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="role" type="user_role">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="users"
+                columnNames="email"
+                constraintName="uk_users_email"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_05_create-orders" author="olesia">
+
+        <createTable tableName="orders">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="order_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="total_amount" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="order_status">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="tour_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="orders"
+                columnNames="order_number"
+                constraintName="uk_orders_order_number"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_orders_user"
+                baseTableName="orders"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_orders_tour"
+                baseTableName="orders"
+                baseColumnNames="tour_id"
+                referencedTableName="tours"
+                referencedColumnNames="id"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_06_create-order-extras" author="olesia">
+
+        <createTable tableName="order_extras">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="order_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="extra_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="amount" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_order_extras_order"
+                baseTableName="order_extras"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_07_create-tickets" author="olesia">
+
+        <createTable tableName="tickets">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="ticket_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="issued_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="order_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="tickets"
+                columnNames="ticket_number"
+                constraintName="uk_tickets_ticket_number"/>
+
+        <addUniqueConstraint
+                tableName="tickets"
+                columnNames="order_id"
+                constraintName="uk_tickets_order_id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_tickets_order"
+                baseTableName="tickets"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_08_create-ticket-extras" author="olesia">
+
+        <createTable tableName="ticket_extras">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="ticket_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="item_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="issued_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="ticket_extras"
+                columnNames="item_number"
+                constraintName="uk_ticket_items_item_number"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_ticket_extras_ticket"
+                baseTableName="ticket_extras"
+                baseColumnNames="ticket_id"
+                referencedTableName="tickets"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_09_create-reviews" author="olesia">
+
+        <createTable tableName="reviews">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="comment" type="text"/>
+
+            <column name="rating" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="order_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="reviews"
+                columnNames="order_id"
+                constraintName="uk_reviews_order_id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_reviews_order"
+                baseTableName="reviews"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_10_create-payments" author="olesia">
+
+        <createTable tableName="payments">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="order_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="payment_method" type="payment_method">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="payment_status">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="paid_at" type="timestamp"/>
+
+            <column name="amount" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="failure_reason" type="varchar(255)"/>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="payments"
+                columnNames="order_id"
+                constraintName="uk_payments_order_id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_payments_order"
+                baseTableName="payments"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="202601024_001_11_create-tour-images" author="olesia">
+
+        <createTable tableName="images">
+
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="tour_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="url" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_main" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="alt" type="varchar(255)"/>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_images_tour"
+                baseTableName="images"
+                baseColumnNames="tour_id"
+                referencedTableName="tours"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+
+</databaseChangeLog>

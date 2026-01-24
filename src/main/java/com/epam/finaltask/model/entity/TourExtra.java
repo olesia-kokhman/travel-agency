@@ -15,7 +15,6 @@ public class TourExtra extends AuditableEntity {
     @Column(name = "short_description")
     private String shortDescription;
 
-    @Lob
     @Column(name = "long_description", nullable = false)
     private String longDescription;
 

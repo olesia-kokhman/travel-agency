@@ -2,7 +2,8 @@ package com.epam.finaltask.model.entity;
 
 import jakarta.persistence.*;
 
-@Entity(name = "images")
+@Entity
+@Table(name = "images")
 public class TourImage extends AuditableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

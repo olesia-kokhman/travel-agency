@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 @Table(name = "reviews")
 public class Review extends AuditableEntity {
 
-    @Lob
     @Column(name = "comment")
     private String comment;
 
