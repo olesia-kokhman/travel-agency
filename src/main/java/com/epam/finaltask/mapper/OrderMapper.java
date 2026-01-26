@@ -1,4 +1,15 @@
 package com.epam.finaltask.mapper;
 
-public class OrderMapper {
+import com.epam.finaltask.dto.order.OrderRequestDto;
+import com.epam.finaltask.dto.order.OrderResponseDto;
+import com.epam.finaltask.model.entity.Order;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+
+
+@Mapper(componentModel = "spring")
+public interface OrderMapper {
+    Order toOrder(OrderRequestDto orderRequestDto);
+    OrderResponseDto toOrderResponseDto(Order order);
+    void updateFromOrderDto(OrderRequestDto orderRequestDto, @MappingTarget Order order);
 }
