@@ -5,9 +5,11 @@ import java.util.List;
 
 import com.epam.finaltask.model.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "uk_users_email", columnNames = "email"))
+@Getter
 public class User extends AuditableEntity {
 
 	@Column(name = "name", nullable = false, length = 100)
