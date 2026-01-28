@@ -1,5 +1,6 @@
-package com.epam.finaltask.config;
+package com.epam.finaltask.security;
 
+import com.epam.finaltask.security.UserDetailsImpl;
 import com.epam.finaltask.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
