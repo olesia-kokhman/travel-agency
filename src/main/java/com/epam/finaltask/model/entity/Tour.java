@@ -9,6 +9,8 @@ import com.epam.finaltask.model.enums.HotelType;
 import com.epam.finaltask.model.enums.TourType;
 import com.epam.finaltask.model.enums.TransferType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "tours")
@@ -42,15 +44,18 @@ public class Tour extends AuditableEntity {
     private Integer capacity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tour_type", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "tour_type", nullable = false, columnDefinition = "tour_type")
     private TourType tourType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transfer_type", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "transfer_type", nullable = false, columnDefinition = "transfer_type")
     private TransferType transferType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "hotel_type", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "hotel_type", nullable = false, columnDefinition = "hotel_type")
     private HotelType hotelType;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

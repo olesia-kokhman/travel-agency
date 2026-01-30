@@ -20,8 +20,9 @@ public class TourController {
     private final TourService tourService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<TourResponseDto>>> readAllTours() {
-        return null;
+    public ResponseEntity<ApiResponse<List<TourResponseDto>>> getAllTours() {
+        return ResponseEntity.ok(new ApiResponse<>("OK",
+                "User is correctly authorized and I can return this message", null));
     }
 
     @GetMapping("/{id}")

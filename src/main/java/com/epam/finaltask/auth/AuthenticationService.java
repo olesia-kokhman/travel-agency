@@ -1,7 +1,7 @@
 package com.epam.finaltask.auth;
 
 import com.epam.finaltask.auth.dto.*;
-import com.epam.finaltask.dto.user.UserRequestDto;
+import com.epam.finaltask.dto.user.UserRegisterDto;
 import com.epam.finaltask.security.UserDetailsImpl;
 import com.epam.finaltask.security.jwt.JwtService;
 import com.epam.finaltask.service.UserService;
@@ -40,17 +40,20 @@ public class AuthenticationService {
 
     }
 
-    public JwtResponseDto register(RegisterRequestDto requestDto) {
-        UserRequestDto userRequestDto = new UserRequestDto(
+    public void register(RegisterRequestDto requestDto) {
+
+        if(userService.existsByEmail(requestDto.getEmail())) {
+            throw new IllegalArgumentException("This user is already registered. Please login instead!");
+        }
+
+        UserRegisterDto userRegisterDto = new UserRegisterDto(
                 requestDto.getName(),
                 requestDto.getSurname(),
                 requestDto.getEmail(),
                 requestDto.getPhoneNumber(),
                 requestDto.getPassword());
 
-        userService.create(userRequestDto);
-
-        return login(new LoginRequestDto(requestDto.getEmail(), requestDto.getPassword()));
+        userService.register(userRegisterDto);
     }
 
     public JwtResponseDto refresh(RefreshRequestDto requestDto) {

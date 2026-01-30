@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/tours/{tour_id}/extras")
+@RequestMapping("/api/tours/{tour_id}/extras")
 @RequiredArgsConstructor
 public class TourExtraController {
 

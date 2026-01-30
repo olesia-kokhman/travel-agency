@@ -2,6 +2,8 @@ package com.epam.finaltask.model.entity;
 
 import com.epam.finaltask.model.enums.OrderStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -17,7 +19,8 @@ public class Order extends AuditableEntity {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status", nullable = false, columnDefinition = "order_status")
     private OrderStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/users/{user_id}/orders/{order_id}/extras")
+@RequestMapping("/api/users/{user_id}/orders/{order_id}/extras")
 @RequiredArgsConstructor
 public class OrderExtraController {
 

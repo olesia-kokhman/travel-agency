@@ -1,8 +1,8 @@
 package com.epam.finaltask.auth.dto;
 
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
+@Data
 public class JwtResponseDto {
     private String jwtAccessToken;
     private String jwtRefreshToken;

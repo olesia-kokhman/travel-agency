@@ -1,6 +1,5 @@
 package com.epam.finaltask.security;
 
-import com.epam.finaltask.security.UserDetailsImpl;
 import com.epam.finaltask.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +15,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return UserDetailsImpl.build(userService.findByEmail(email).orElseThrow(() ->
+        return UserDetailsImpl.build(userService.getByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("User is not found")));
 
     }

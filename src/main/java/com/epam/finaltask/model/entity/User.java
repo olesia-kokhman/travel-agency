@@ -1,15 +1,24 @@
 package com.epam.finaltask.model.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.epam.finaltask.model.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "uk_users_email", columnNames = "email"))
 @Getter
+@Setter
+@AllArgsConstructor()
+@NoArgsConstructor
 public class User extends AuditableEntity {
 
 	@Column(name = "name", nullable = false, length = 100)
@@ -34,10 +43,11 @@ public class User extends AuditableEntity {
 	private BigDecimal balance = BigDecimal.ZERO;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "role", nullable = false)
+	@JdbcTypeCode(SqlTypes.NAMED_ENUM)
+	@Column(name = "role", nullable = false, columnDefinition = "user_role")
     private UserRole role;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<Order> orders;
+	private List<Order> orders = new ArrayList<>();
     
 }

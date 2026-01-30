@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/tour/{tour_id}/images")
+@RequestMapping("/api/tour/{tour_id}/images")
 @RequiredArgsConstructor
 public class TourImageController {
 

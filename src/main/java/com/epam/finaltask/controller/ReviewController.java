@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/users/{user_id}/orders/{order_id}/review")
+@RequestMapping("/api/users/{user_id}/orders/{order_id}/review")
 @RequiredArgsConstructor
 public class ReviewController {
 

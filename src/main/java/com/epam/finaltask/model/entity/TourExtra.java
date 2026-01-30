@@ -2,6 +2,8 @@ package com.epam.finaltask.model.entity;
 
 import com.epam.finaltask.model.enums.ExtraServiceType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 
@@ -28,7 +30,8 @@ public class TourExtra extends AuditableEntity {
     private Integer capacity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "type", nullable = false, columnDefinition = "extra_service_type")
     private ExtraServiceType type;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

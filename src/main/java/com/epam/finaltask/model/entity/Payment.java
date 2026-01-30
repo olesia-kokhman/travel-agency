@@ -3,6 +3,8 @@ package com.epam.finaltask.model.entity;
 import com.epam.finaltask.model.enums.PaymentMethod;
 import com.epam.finaltask.model.enums.PaymentStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 import java.math.BigDecimal;
@@ -17,11 +19,13 @@ public class Payment extends AuditableEntity {
     private Order order;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "payment_method", nullable = false, columnDefinition = "payment_method")
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status", nullable = false, columnDefinition = "payment_status")
     private PaymentStatus status;
 
     @Column(name = "paid_at")

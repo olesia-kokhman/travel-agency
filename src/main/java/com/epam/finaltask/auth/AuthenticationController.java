@@ -19,12 +19,15 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<JwtResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        return null;
+        return ResponseEntity.ok(new ApiResponse<>("OK", "User is logged in",
+                authenticationService.login(requestDto)));
     }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<JwtResponseDto>> register(@Valid @RequestBody RegisterRequestDto requestDto) {
-        return null;
+        authenticationService.register(requestDto);
+        return ResponseEntity.ok(new ApiResponse<>("OK", "User is registered",
+                null));
     }
 
     @PostMapping("/refresh")
