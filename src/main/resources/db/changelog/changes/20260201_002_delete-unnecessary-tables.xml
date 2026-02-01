@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260201_002_01-drop-tour-extras-table" author="olesia">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="tour_extras"/>
+        </preConditions>
+
+        <dropTable tableName="tour_extras" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="20260201_002-02-drop-images-table" author="olesia">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="images"/>
+        </preConditions>
+
+        <dropTable tableName="images" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="20260201_002-03-drop-ticket-extras-table" author="olesia">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="ticket_extras"/>
+        </preConditions>
+
+        <dropTable tableName="ticket_extras" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="20260201_002-04-drop-tickets-table" author="olesia">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="tickets"/>
+        </preConditions>
+
+        <dropTable tableName="tickets" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="20260201_002-05-drop-order-extras-table" author="olesia">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="order_extras"/>
+        </preConditions>
+
+        <dropTable tableName="order_extras" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="20260201_002-06-drop-extra-service-type-enum" author="stepan">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM pg_type t
+                                 JOIN pg_namespace n ON n.oid = t.typnamespace
+                        WHERE t.typname = 'extra_service_type'
+                    ) THEN 1 ELSE 0 END;
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.columns
+                WHERE udt_name = 'extra_service_type';
+            </sqlCheck>
+        </preConditions>
+
+        <sql>DROP TYPE extra_service_type;</sql>
+    </changeSet>
+
+
+</databaseChangeLog>

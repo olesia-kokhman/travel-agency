@@ -2,8 +2,6 @@ package com.epam.finaltask.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 import com.epam.finaltask.model.enums.HotelType;
 import com.epam.finaltask.model.enums.TourType;
@@ -61,12 +59,6 @@ public class Tour extends AuditableEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "hotel_type", nullable = false, columnDefinition = "hotel_type")
     private HotelType hotelType;
-
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<TourImage> images;
-
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<TourExtra> extras;
 
     @Column(name = "check_in_datetime", nullable = false)
     private LocalDateTime checkIn;

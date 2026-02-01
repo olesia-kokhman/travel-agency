@@ -1,9 +1,7 @@
 package com.epam.finaltask.dto.order;
 
-import com.epam.finaltask.dto.order.extra.OrderExtraResponseDto;
 import com.epam.finaltask.dto.payment.PaymentResponseDto;
 import com.epam.finaltask.dto.review.ReviewResponseDto;
-import com.epam.finaltask.dto.ticket.TicketResponseDto;
 import com.epam.finaltask.model.enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,9 +27,6 @@ public class OrderResponseDto {
     private UUID userId;
     private UUID tourId;
 
-    private Set<OrderExtraResponseDto> extras;
-
-    private TicketResponseDto ticket;
     private ReviewResponseDto review;
     private PaymentResponseDto payment;
 }
