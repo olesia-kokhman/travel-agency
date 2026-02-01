@@ -1,7 +1,7 @@
-package com.epam.finaltask.mapper.blocked;
+package com.epam.finaltask.mapper;
 
-import com.epam.finaltask.dto.order.payment.PaymentRequestDto;
-import com.epam.finaltask.dto.order.payment.PaymentResponseDto;
+import com.epam.finaltask.dto.payment.PaymentRequestDto;
+import com.epam.finaltask.dto.payment.PaymentResponseDto;
 import com.epam.finaltask.model.entity.Payment;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
                                                                          HttpServletRequest request) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         apiErrorResponse.setMessage("Validation failed");
-        apiErrorResponse.setErrorCode("VALIDATION_ERROR");
+        apiErrorResponse.setErrorCode("FIELD_VALIDATION_ERROR");
 
         apiErrorResponse.setPath(request.getRequestURI());
         apiErrorResponse.setMethod(request.getMethod());

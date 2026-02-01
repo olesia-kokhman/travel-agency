@@ -1,8 +1,8 @@
 package com.epam.finaltask.dto.order;
 
 import com.epam.finaltask.dto.order.extra.OrderExtraResponseDto;
-import com.epam.finaltask.dto.order.payment.PaymentResponseDto;
-import com.epam.finaltask.dto.order.review.ReviewResponseDto;
+import com.epam.finaltask.dto.payment.PaymentResponseDto;
+import com.epam.finaltask.dto.review.ReviewResponseDto;
 import com.epam.finaltask.dto.ticket.TicketResponseDto;
 import com.epam.finaltask.model.enums.OrderStatus;
 import lombok.AllArgsConstructor;

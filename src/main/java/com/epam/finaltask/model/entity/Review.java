@@ -1,9 +1,15 @@
 package com.epam.finaltask.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "reviews")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review extends AuditableEntity {
 
     @Column(name = "comment")

@@ -1,10 +1,10 @@
-package com.epam.finaltask.controller.blocked;
+package com.epam.finaltask.controller;
 
 import com.epam.finaltask.dto.ApiSuccessResponse;
-import com.epam.finaltask.dto.order.payment.PaymentRequestDto;
-import com.epam.finaltask.dto.order.payment.PaymentResponseDto;
+import com.epam.finaltask.dto.payment.PaymentRequestDto;
+import com.epam.finaltask.dto.payment.PaymentResponseDto;
 import com.epam.finaltask.model.enums.PaymentStatus;
-import com.epam.finaltask.service.blocked.PaymentService;
+import com.epam.finaltask.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

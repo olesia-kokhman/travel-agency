@@ -1,14 +1,20 @@
-package com.epam.finaltask.dto.order.review;
+package com.epam.finaltask.dto.review;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class ReviewRequestDto {
+public class ReviewResponseDto {
+
+    private UUID id;
 
     private String comment;
     private Integer rating;
+
+    private UUID orderId;
 }

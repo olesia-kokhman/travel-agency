@@ -1,4 +1,4 @@
-package com.epam.finaltask.service.blocked;
+package com.epam.finaltask.service;
 
 import org.springframework.stereotype.Service;
 
