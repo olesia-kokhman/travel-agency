@@ -2,14 +2,17 @@ package com.epam.finaltask.model.entity;
 
 import com.epam.finaltask.model.enums.OrderStatus;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
 @Table(name = "orders", uniqueConstraints = @UniqueConstraint(name = "uk_orders_order_number", columnNames = "order_number"))
+@Data
 public class Order extends AuditableEntity {
 
     @Column(name = "order_number", nullable = false, updatable = false)

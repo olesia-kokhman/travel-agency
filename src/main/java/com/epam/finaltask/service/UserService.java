@@ -1,15 +1,18 @@
 package com.epam.finaltask.service;
 
+import com.epam.finaltask.auth.dto.RegisterRequestDto;
 import com.epam.finaltask.dto.user.*;
+import com.epam.finaltask.exception.EmailAlreadyExistsException;
+import com.epam.finaltask.exception.UserNotFoundException;
 import com.epam.finaltask.mapper.UserMapper;
 import com.epam.finaltask.model.entity.Order;
 import com.epam.finaltask.model.entity.User;
 import com.epam.finaltask.model.enums.UserRole;
 import com.epam.finaltask.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,28 +28,32 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public Optional<User> getByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponseDto> getAll() {
-        return userRepository.findAll().stream().map(user -> userMapper.toDto(user)).toList();
+        return userRepository.findAll().stream().map(userMapper::toDto).toList();
     }
 
-    public UserResponseDto getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("User with id " + id + " is not found"));
+    @Transactional(readOnly = true)
+    public UserResponseDto getById(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         return userMapper.toDto(user);
     }
 
-    public UserResponseDto register(UserRegisterDto userRegisterDto) {
+    @Transactional
+    public UserResponseDto register(RegisterRequestDto userRegisterDto) {
 
         if(userRepository.existsByEmail(userRegisterDto.getEmail())) {
-            throw new IllegalArgumentException("User with the provided email already exists");
+            throw new EmailAlreadyExistsException(userRegisterDto.getEmail());
         }
 
         boolean active = true;
@@ -64,13 +71,13 @@ public class UserService {
                 balance,
                 role,
                 orders);
-
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @Transactional
     public UserResponseDto createUser(UserCreateDto userCreateDto) {
         if(userRepository.existsByEmail(userCreateDto.getEmail())) {
-            throw new IllegalArgumentException("User with the provided email already exists");
+            throw new EmailAlreadyExistsException(userCreateDto.getEmail());
         }
 
         User user = new User(
@@ -87,18 +94,21 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @Transactional
     public UserResponseDto updateUser(UUID userId, UserAccessUpdateDto userAccessUpdateDto) {
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " is not found"));
-
+        User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         userMapper.updateAccessFromDto(userAccessUpdateDto, currentUser);
         return userMapper.toDto(userRepository.save(currentUser));
     }
 
-    public UserResponseDto updateProfile(UUID userId, UserUpdateProfileDto userUpdateProfileDto) { // need to check
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " is not found"));
-        // need to change exception type
+    @Transactional
+    public UserResponseDto updateProfile(UUID userId, UserUpdateProfileDto userUpdateProfileDto) {
+        User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        if(userRepository.existsByEmail(userUpdateProfileDto.getEmail())) {
+            throw new EmailAlreadyExistsException(userUpdateProfileDto.getEmail());
+        }
+
         userMapper.updateUserProfileFromDto(userUpdateProfileDto, currentUser);
 
         if (userUpdateProfileDto.getPassword() != null && !userUpdateProfileDto.getPassword().isBlank()) {
@@ -108,12 +118,13 @@ public class UserService {
         return userMapper.toDto(userRepository.save(currentUser));
     }
 
+    @Transactional
     public void deleteUser(UUID userId) {
 
         if(userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
         } else {
-            throw new EntityNotFoundException("User with id " + userId + " is not found");
+            throw new UserNotFoundException(userId);
         }
 
     }

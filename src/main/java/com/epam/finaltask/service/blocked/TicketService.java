@@ -1,7 +1,9 @@
-package com.epam.finaltask.service;
+package com.epam.finaltask.service.blocked;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class TicketService {
+
+
 }

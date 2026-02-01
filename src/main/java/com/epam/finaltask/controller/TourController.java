@@ -1,8 +1,10 @@
 package com.epam.finaltask.controller;
 
-import com.epam.finaltask.dto.ApiResponse;
-import com.epam.finaltask.dto.tour.TourRequestDto;
+import com.epam.finaltask.dto.ApiSuccessResponse;
+import com.epam.finaltask.dto.tour.TourHotUpdateDto;
+import com.epam.finaltask.dto.tour.TourCreateDto;
 import com.epam.finaltask.dto.tour.TourResponseDto;
+import com.epam.finaltask.dto.tour.TourUpdateDto;
 import com.epam.finaltask.service.TourService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,42 +22,42 @@ public class TourController {
     private final TourService tourService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<TourResponseDto>>> getAllTours() {
-        return ResponseEntity.ok(new ApiResponse<>("OK",
-                "User is correctly authorized and I can return this message", null));
+    public ResponseEntity<ApiSuccessResponse<List<TourResponseDto>>> getAll() {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tours are successfully read",
+                tourService.getAll()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<TourResponseDto>> readTourById(@PathVariable("id") UUID id) {
-        return null;
+    @GetMapping("/{tour_id}")
+    public ResponseEntity<ApiSuccessResponse<TourResponseDto>> getById(@PathVariable("tour_id") UUID tourId) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully read",
+                tourService.getById(tourId)));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TourResponseDto>> createTour(@Valid @RequestBody TourRequestDto requestDto) {
-        return null;
+    public ResponseEntity<ApiSuccessResponse<TourResponseDto>> create(@Valid @RequestBody TourCreateDto requestDto) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully created",
+                tourService.create(requestDto)));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<TourResponseDto>> updateTour(@PathVariable("id") UUID id,
-                                                                   @Valid @RequestBody TourRequestDto requestDto) {
-        return null;
+    @PatchMapping("/{tour_id}")
+    public ResponseEntity<ApiSuccessResponse<TourResponseDto>> update(@PathVariable("tour_id") UUID tourId,
+                                                                      @Valid @RequestBody TourUpdateDto tourUpdateDto) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully updated",
+                tourService.update(tourId, tourUpdateDto)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteTour(@PathVariable("id") UUID id) {
-        return null;
+    @DeleteMapping("/{tour_id}")
+    public ResponseEntity<ApiSuccessResponse<Void>> deleteTour(@PathVariable("tour_id") UUID tourId) {
+        tourService.delete(tourId);
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully deleted", null));
     }
 
-    @PatchMapping("/{id}/active")
-    public ResponseEntity<ApiResponse<TourResponseDto>> updateTourActive(@PathVariable("id") UUID id,
-                                                                         @RequestParam("active") Boolean active) {
-        return null;
-    }
 
-    @PatchMapping("/{id}/hot")
-    public ResponseEntity<ApiResponse<TourResponseDto>> updateTourHot(@PathVariable("id") UUID id,
-                                                                      @RequestParam("hot") Boolean hot) {
-        return null;
+    @PatchMapping("/{tour_id}/hot")
+    public ResponseEntity<ApiSuccessResponse<TourResponseDto>> updateHot(@PathVariable("tour_id") UUID tourId,
+                                                                         @Valid @RequestBody TourHotUpdateDto tourHotUpdateDto) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully updated to hot",
+                tourService.updateHot(tourId, tourHotUpdateDto)));
     }
 
 }

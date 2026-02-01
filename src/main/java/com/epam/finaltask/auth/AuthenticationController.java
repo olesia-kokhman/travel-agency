@@ -1,7 +1,7 @@
 package com.epam.finaltask.auth;
 
 import com.epam.finaltask.auth.dto.*;
-import com.epam.finaltask.dto.ApiResponse;
+import com.epam.finaltask.dto.ApiSuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +18,25 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<JwtResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        return ResponseEntity.ok(new ApiResponse<>("OK", "User is logged in",
+    public ResponseEntity<ApiSuccessResponse<JwtResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is logged in",
                 authenticationService.login(requestDto)));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<JwtResponseDto>> register(@Valid @RequestBody RegisterRequestDto requestDto) {
+    public ResponseEntity<ApiSuccessResponse<JwtResponseDto>> register(@Valid @RequestBody RegisterRequestDto requestDto) {
         authenticationService.register(requestDto);
-        return ResponseEntity.ok(new ApiResponse<>("OK", "User is registered",
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is registered",
                 null));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<JwtResponseDto>> refresh(@Valid @RequestBody RefreshRequestDto requestDto) {
+    public ResponseEntity<ApiSuccessResponse<JwtResponseDto>> refresh(@Valid @RequestBody RefreshRequestDto requestDto) {
         return null;
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody LogoutRequestDto requestDto) {
+    public ResponseEntity<ApiSuccessResponse<Void>> logout(@Valid @RequestBody LogoutRequestDto requestDto) {
         return null;
     }
 

@@ -1,4 +1,4 @@
-package com.epam.finaltask.controller;
+package com.epam.finaltask.controller.blocked;
 
 import com.epam.finaltask.dto.ticket.extra.TicketExtraRequestDto;
 import com.epam.finaltask.dto.ticket.extra.TicketExtraResponseDto;
@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.epam.finaltask.dto.ApiResponse;
-import com.epam.finaltask.service.TicketExtraService;
+import com.epam.finaltask.dto.ApiSuccessResponse;
+import com.epam.finaltask.service.blocked.TicketExtraService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ public class TicketExtraController {
     private final TicketExtraService ticketExtraService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<TicketExtraResponseDto>>> readAllItemsByTicket(
+    public ResponseEntity<ApiSuccessResponse<List<TicketExtraResponseDto>>> readAllItemsByTicket(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {
@@ -31,7 +31,7 @@ public class TicketExtraController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<TicketExtraResponseDto>> readItemById(
+    public ResponseEntity<ApiSuccessResponse<TicketExtraResponseDto>> readItemById(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @PathVariable("id") UUID id
@@ -40,7 +40,7 @@ public class TicketExtraController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TicketExtraResponseDto>> createItem(
+    public ResponseEntity<ApiSuccessResponse<TicketExtraResponseDto>> createItem(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody TicketExtraRequestDto requestDto
@@ -49,7 +49,7 @@ public class TicketExtraController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<TicketExtraResponseDto>> updateItem(
+    public ResponseEntity<ApiSuccessResponse<TicketExtraResponseDto>> updateItem(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @PathVariable("id") UUID id,
@@ -59,7 +59,7 @@ public class TicketExtraController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteItem(
+    public ResponseEntity<ApiSuccessResponse<Void>> deleteItem(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @PathVariable("id") UUID id

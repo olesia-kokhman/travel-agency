@@ -1,9 +1,9 @@
-package com.epam.finaltask.controller;
+package com.epam.finaltask.controller.blocked;
 
-import com.epam.finaltask.dto.ApiResponse;
+import com.epam.finaltask.dto.ApiSuccessResponse;
 import com.epam.finaltask.dto.order.extra.OrderExtraRequestDto;
 import com.epam.finaltask.dto.order.extra.OrderExtraResponseDto;
-import com.epam.finaltask.service.OrderExtraService;
+import com.epam.finaltask.service.blocked.OrderExtraService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class OrderExtraController {
     private final OrderExtraService orderExtraService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<OrderExtraResponseDto>>> readAllExtrasByOrder(
+    public ResponseEntity<ApiSuccessResponse<List<OrderExtraResponseDto>>> readAllExtrasByOrder(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {
@@ -28,7 +28,7 @@ public class OrderExtraController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderExtraResponseDto>> readExtraById(
+    public ResponseEntity<ApiSuccessResponse<OrderExtraResponseDto>> readExtraById(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @PathVariable("id") UUID id
@@ -37,7 +37,7 @@ public class OrderExtraController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderExtraResponseDto>> createExtra(
+    public ResponseEntity<ApiSuccessResponse<OrderExtraResponseDto>> createExtra(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody OrderExtraRequestDto requestDto
@@ -46,7 +46,7 @@ public class OrderExtraController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderExtraResponseDto>> updateExtra(
+    public ResponseEntity<ApiSuccessResponse<OrderExtraResponseDto>> updateExtra(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @PathVariable("id") UUID id,
@@ -56,7 +56,7 @@ public class OrderExtraController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteExtra(
+    public ResponseEntity<ApiSuccessResponse<Void>> deleteExtra(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @PathVariable("id") UUID id

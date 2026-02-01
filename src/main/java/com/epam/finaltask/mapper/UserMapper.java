@@ -1,7 +1,7 @@
 package com.epam.finaltask.mapper;
 
+import com.epam.finaltask.auth.dto.RegisterRequestDto;
 import com.epam.finaltask.dto.user.UserAccessUpdateDto;
-import com.epam.finaltask.dto.user.UserRegisterDto;
 import com.epam.finaltask.dto.user.UserResponseDto;
 import com.epam.finaltask.dto.user.UserUpdateProfileDto;
 import com.epam.finaltask.model.entity.User;
@@ -10,7 +10,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    User toUser(UserRegisterDto userRegisterDto);
+    User toUser(RegisterRequestDto userRegisterDto);
     UserResponseDto toDto(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

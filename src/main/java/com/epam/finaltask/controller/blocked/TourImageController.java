@@ -1,9 +1,9 @@
-package com.epam.finaltask.controller;
+package com.epam.finaltask.controller.blocked;
 
-import com.epam.finaltask.dto.ApiResponse;
+import com.epam.finaltask.dto.ApiSuccessResponse;
 import com.epam.finaltask.dto.tour.image.TourImageRequestDto;
 import com.epam.finaltask.dto.tour.image.TourImageResponseDto;
-import com.epam.finaltask.service.TourImageService;
+import com.epam.finaltask.service.blocked.TourImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +20,14 @@ public class TourImageController {
     private final TourImageService tourImageService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<TourImageResponseDto>>> readAllImagesByTour(
+    public ResponseEntity<ApiSuccessResponse<List<TourImageResponseDto>>> readAllImagesByTour(
             @PathVariable("tour_id") UUID tourId
     ) {
         return null;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<TourImageResponseDto>> readImageById(
+    public ResponseEntity<ApiSuccessResponse<TourImageResponseDto>> readImageById(
             @PathVariable("tour_id") UUID tourId,
             @PathVariable("id") UUID id
     ) {
@@ -35,7 +35,7 @@ public class TourImageController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TourImageResponseDto>> createImage(
+    public ResponseEntity<ApiSuccessResponse<TourImageResponseDto>> createImage(
             @PathVariable("tour_id") UUID tourId,
             @Valid @RequestBody TourImageRequestDto requestDto
     ) {
@@ -43,7 +43,7 @@ public class TourImageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<TourImageResponseDto>> updateImage(
+    public ResponseEntity<ApiSuccessResponse<TourImageResponseDto>> updateImage(
             @PathVariable("tour_id") UUID tourId,
             @PathVariable("id") UUID id,
             @Valid @RequestBody TourImageRequestDto requestDto
@@ -52,7 +52,7 @@ public class TourImageController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteImage(
+    public ResponseEntity<ApiSuccessResponse<Void>> deleteImage(
             @PathVariable("tour_id") UUID tourId,
             @PathVariable("id") UUID id
     ) {
@@ -60,7 +60,7 @@ public class TourImageController {
     }
 
     @PatchMapping("/{id}/main")
-    public ResponseEntity<ApiResponse<TourImageResponseDto>> updateImageMain(
+    public ResponseEntity<ApiSuccessResponse<TourImageResponseDto>> updateImageMain(
             @PathVariable("tour_id") UUID tourId,
             @PathVariable("id") UUID id,
             @RequestParam("main") Boolean main

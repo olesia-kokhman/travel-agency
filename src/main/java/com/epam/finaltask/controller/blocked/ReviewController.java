@@ -1,9 +1,9 @@
-package com.epam.finaltask.controller;
+package com.epam.finaltask.controller.blocked;
 
-import com.epam.finaltask.dto.ApiResponse;
+import com.epam.finaltask.dto.ApiSuccessResponse;
 import com.epam.finaltask.dto.order.review.ReviewRequestDto;
 import com.epam.finaltask.dto.order.review.ReviewResponseDto;
-import com.epam.finaltask.service.ReviewService;
+import com.epam.finaltask.service.blocked.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<ReviewResponseDto>> readReviewByOrder(
+    public ResponseEntity<ApiSuccessResponse<ReviewResponseDto>> readReviewByOrder(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {
@@ -27,7 +27,7 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ReviewResponseDto>> createReview(
+    public ResponseEntity<ApiSuccessResponse<ReviewResponseDto>> createReview(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody ReviewRequestDto requestDto
@@ -36,7 +36,7 @@ public class ReviewController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<ReviewResponseDto>> updateReview(
+    public ResponseEntity<ApiSuccessResponse<ReviewResponseDto>> updateReview(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody ReviewRequestDto requestDto
@@ -45,7 +45,7 @@ public class ReviewController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<Void>> deleteReview(
+    public ResponseEntity<ApiSuccessResponse<Void>> deleteReview(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {

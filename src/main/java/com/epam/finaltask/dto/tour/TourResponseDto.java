@@ -5,6 +5,8 @@ import com.epam.finaltask.dto.tour.image.TourImageResponseDto;
 import com.epam.finaltask.model.enums.HotelType;
 import com.epam.finaltask.model.enums.TourType;
 import com.epam.finaltask.model.enums.TransferType;
+import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class TourResponseDto {
 
     private UUID id;
@@ -41,4 +44,8 @@ public class TourResponseDto {
 
     private List<TourExtraResponseDto> extras;
     private List<TourImageResponseDto> images;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 }

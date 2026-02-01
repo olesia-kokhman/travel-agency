@@ -1,9 +1,9 @@
-package com.epam.finaltask.controller;
+package com.epam.finaltask.controller.blocked;
 
-import com.epam.finaltask.dto.ApiResponse;
+import com.epam.finaltask.dto.ApiSuccessResponse;
 import com.epam.finaltask.dto.ticket.TicketRequestDto;
 import com.epam.finaltask.dto.ticket.TicketResponseDto;
-import com.epam.finaltask.service.TicketService;
+import com.epam.finaltask.service.blocked.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<TicketResponseDto>> readTicketByOrder(
+    public ResponseEntity<ApiSuccessResponse<TicketResponseDto>> readTicketByOrder(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {
@@ -27,7 +27,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TicketResponseDto>> createTicket(
+    public ResponseEntity<ApiSuccessResponse<TicketResponseDto>> createTicket(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody TicketRequestDto requestDto
@@ -36,7 +36,7 @@ public class TicketController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<TicketResponseDto>> updateTicket(
+    public ResponseEntity<ApiSuccessResponse<TicketResponseDto>> updateTicket(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody TicketRequestDto requestDto
@@ -45,7 +45,7 @@ public class TicketController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<Void>> deleteTicket(
+    public ResponseEntity<ApiSuccessResponse<Void>> deleteTicket(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {

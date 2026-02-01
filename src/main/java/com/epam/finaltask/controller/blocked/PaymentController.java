@@ -1,10 +1,10 @@
-package com.epam.finaltask.controller;
+package com.epam.finaltask.controller.blocked;
 
-import com.epam.finaltask.dto.ApiResponse;
+import com.epam.finaltask.dto.ApiSuccessResponse;
 import com.epam.finaltask.dto.order.payment.PaymentRequestDto;
 import com.epam.finaltask.dto.order.payment.PaymentResponseDto;
 import com.epam.finaltask.model.enums.PaymentStatus;
-import com.epam.finaltask.service.PaymentService;
+import com.epam.finaltask.service.blocked.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PaymentResponseDto>> readPaymentByOrder(
+    public ResponseEntity<ApiSuccessResponse<PaymentResponseDto>> readPaymentByOrder(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {
@@ -28,7 +28,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PaymentResponseDto>> createPayment(
+    public ResponseEntity<ApiSuccessResponse<PaymentResponseDto>> createPayment(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody PaymentRequestDto requestDto
@@ -37,7 +37,7 @@ public class PaymentController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<PaymentResponseDto>> updatePayment(
+    public ResponseEntity<ApiSuccessResponse<PaymentResponseDto>> updatePayment(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @Valid @RequestBody PaymentRequestDto requestDto
@@ -46,7 +46,7 @@ public class PaymentController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<Void>> deletePayment(
+    public ResponseEntity<ApiSuccessResponse<Void>> deletePayment(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId
     ) {
@@ -54,7 +54,7 @@ public class PaymentController {
     }
 
     @PatchMapping("/status")
-    public ResponseEntity<ApiResponse<PaymentResponseDto>> updatePaymentStatus(
+    public ResponseEntity<ApiSuccessResponse<PaymentResponseDto>> updatePaymentStatus(
             @PathVariable("user_id") UUID userId,
             @PathVariable("order_id") UUID orderId,
             @RequestParam("status") PaymentStatus status

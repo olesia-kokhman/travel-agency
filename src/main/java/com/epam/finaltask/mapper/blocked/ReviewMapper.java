@@ -1,4 +1,4 @@
-package com.epam.finaltask.mapper;
+package com.epam.finaltask.mapper.blocked;
 
 import com.epam.finaltask.dto.order.review.ReviewRequestDto;
 import com.epam.finaltask.dto.order.review.ReviewResponseDto;

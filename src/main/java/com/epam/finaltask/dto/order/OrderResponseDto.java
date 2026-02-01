@@ -5,6 +5,7 @@ import com.epam.finaltask.dto.order.payment.PaymentResponseDto;
 import com.epam.finaltask.dto.order.review.ReviewResponseDto;
 import com.epam.finaltask.dto.ticket.TicketResponseDto;
 import com.epam.finaltask.model.enums.OrderStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderResponseDto {
 
     private UUID id;
