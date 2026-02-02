@@ -18,5 +18,6 @@ public interface UserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "email", ignore = true)
     void updateUserProfileFromDto(UserUpdateProfileDto dto, @MappingTarget User user);
 }

@@ -33,27 +33,27 @@ public class TourController {
                 tourService.getById(tourId)));
     }
 
-    @PostMapping
+    @PostMapping // admin
     public ResponseEntity<ApiSuccessResponse<TourResponseDto>> create(@Valid @RequestBody TourCreateDto requestDto) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully created",
                 tourService.create(requestDto)));
     }
 
-    @PatchMapping("/{tour_id}")
+    @PatchMapping("/{tour_id}") // admin
     public ResponseEntity<ApiSuccessResponse<TourResponseDto>> update(@PathVariable("tour_id") UUID tourId,
                                                                       @Valid @RequestBody TourUpdateDto tourUpdateDto) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully updated",
                 tourService.update(tourId, tourUpdateDto)));
     }
 
-    @DeleteMapping("/{tour_id}")
+    @DeleteMapping("/{tour_id}") // admin
     public ResponseEntity<ApiSuccessResponse<Void>> deleteTour(@PathVariable("tour_id") UUID tourId) {
         tourService.delete(tourId);
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully deleted", null));
     }
 
 
-    @PatchMapping("/{tour_id}/hot")
+    @PatchMapping("/{tour_id}/hot") // manager and admin
     public ResponseEntity<ApiSuccessResponse<TourResponseDto>> updateHot(@PathVariable("tour_id") UUID tourId,
                                                                          @Valid @RequestBody TourHotUpdateDto tourHotUpdateDto) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Tour is successfully updated to hot",

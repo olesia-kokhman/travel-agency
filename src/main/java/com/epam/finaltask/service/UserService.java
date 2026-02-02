@@ -10,6 +10,7 @@ import com.epam.finaltask.model.entity.User;
 import com.epam.finaltask.model.enums.UserRole;
 import com.epam.finaltask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,11 +39,13 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<UserResponseDto> getAll() {
         return userRepository.findAll().stream().map(userMapper::toDto).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public UserResponseDto getById(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -74,6 +77,7 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public UserResponseDto createUser(UserCreateDto userCreateDto) {
         if(userRepository.existsByEmail(userCreateDto.getEmail())) {
@@ -94,6 +98,7 @@ public class UserService {
         return userMapper.toDto(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public UserResponseDto updateUser(UUID userId, UserAccessUpdateDto userAccessUpdateDto) {
         User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -101,12 +106,17 @@ public class UserService {
         return userMapper.toDto(userRepository.save(currentUser));
     }
 
+    @PreAuthorize("#userId == authentication.principal.id")
     @Transactional
     public UserResponseDto updateProfile(UUID userId, UserUpdateProfileDto userUpdateProfileDto) {
         User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
-        if(userRepository.existsByEmail(userUpdateProfileDto.getEmail())) {
-            throw new EmailAlreadyExistsException(userUpdateProfileDto.getEmail());
+        String newEmail = userUpdateProfileDto.getEmail();
+        if (newEmail != null && !newEmail.equalsIgnoreCase(currentUser.getEmail())) {
+            if (userRepository.existsByEmail(newEmail)) {
+                throw new EmailAlreadyExistsException(newEmail);
+            }
+            currentUser.setEmail(newEmail);
         }
 
         userMapper.updateUserProfileFromDto(userUpdateProfileDto, currentUser);
@@ -118,6 +128,7 @@ public class UserService {
         return userMapper.toDto(userRepository.save(currentUser));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void deleteUser(UUID userId) {
 

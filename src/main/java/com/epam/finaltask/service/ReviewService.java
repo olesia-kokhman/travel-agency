@@ -13,6 +13,7 @@ import com.epam.finaltask.model.enums.OrderStatus;
 import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class ReviewService {
     private final ReviewMapper reviewMapper;
     private final OrderRepository orderRepository;
 
-    // for admin
+    // for all
     @Transactional(readOnly = true)
     public List<ReviewResponseDto> getAllByTour(UUID tourId) {
         return reviewRepository.findAllByOrderTourId(tourId)
@@ -37,6 +38,7 @@ public class ReviewService {
     }
 
     // for user
+    @PreAuthorize("#userId == authentication.principal.id")
     @Transactional
     public ReviewResponseDto createReview(UUID userId, UUID orderId, ReviewCreateDto reviewCreateDto) {
         Order order = orderRepository.findById(orderId)
@@ -62,6 +64,7 @@ public class ReviewService {
 
     // for user
     @Transactional
+    @PreAuthorize("#userId == authentication.principal.id")
     public ReviewResponseDto updateReview(UUID userId, UUID reviewId, ReviewUpdateDto reviewUpdateDto) {
 
         Review review = reviewRepository.findById(reviewId)

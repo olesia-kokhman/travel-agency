@@ -24,6 +24,7 @@ public class PaymentResponseDto {
     private BigDecimal amount;
 
     private String failureReason;
-
     private UUID orderId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -17,4 +18,7 @@ public class ReviewResponseDto {
     private Integer rating;
 
     private UUID orderId;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

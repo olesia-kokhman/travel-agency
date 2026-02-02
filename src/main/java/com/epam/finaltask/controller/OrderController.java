@@ -22,30 +22,30 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
+    @GetMapping // admin
     public ResponseEntity<ApiSuccessResponse<List<OrderResponseDto>>> getAllOrders() {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE", orderService.getAll()));
     }
 
-    @GetMapping("/me/{user_id}")
+    @GetMapping("/me/{user_id}") // user and admin
     public ResponseEntity<ApiSuccessResponse<List<OrderResponseDto>>> getAllOrdersByUser(@PathVariable("user_id") UUID userId) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE", orderService.getAll(userId)));
     }
 
-    @GetMapping("/me/{order_id}") // for user
+    @GetMapping("/me/order/{order_id}") // for user
     public ResponseEntity<ApiSuccessResponse<OrderResponseDto>> getOrderById(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                              @PathVariable("order_id") UUID orderId) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE",
                 orderService.getById(userDetails.getId(), orderId)));
     }
 
-    @GetMapping("/{order_id}")
+    @GetMapping("/{order_id}") // for admin
     public ResponseEntity<ApiSuccessResponse<OrderResponseDto>> getOrderById(@PathVariable("order_id") UUID orderId) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE",
                orderService.getById(orderId)));
     }
 
-    @PostMapping
+    @PostMapping("/me")
     public ResponseEntity<ApiSuccessResponse<OrderResponseDto>> createOrder(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                             @Valid @RequestBody OrderCreateDto createDto) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE",

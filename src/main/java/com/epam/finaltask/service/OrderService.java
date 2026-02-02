@@ -13,6 +13,7 @@ import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
 
-    // for user and admin
+    @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")
     @Transactional(readOnly = true)
     public List<OrderResponseDto> getAll(UUID userId) {
         if(!userRepository.existsById(userId)) {
@@ -39,13 +40,13 @@ public class OrderService {
         return orders.stream().map(orderMapper::toOrderResponseDto).toList();
     }
 
-    // for admin
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Transactional(readOnly = true)
     public List<OrderResponseDto> getAll() {
         return orderRepository.findAll().stream().map(orderMapper::toOrderResponseDto).toList();
     }
 
-    // for user
+    @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")
     @Transactional(readOnly = true)
     public OrderResponseDto getById(UUID userId, UUID orderId) {
         if (!userRepository.existsById(userId)) {
@@ -58,14 +59,14 @@ public class OrderService {
         return orderMapper.toOrderResponseDto(order);
     }
 
-    // for admin
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Transactional(readOnly = true)
     public OrderResponseDto getById(UUID orderId) {
         return orderMapper.toOrderResponseDto(orderRepository.findById(orderId).orElseThrow(() ->
                 new ResourceNotFoundException("Order", orderId)));
     }
 
-    // for user
+    @PreAuthorize("#userId == authentication.principal.id")
     @Transactional
     public OrderResponseDto create(UUID userId, OrderCreateDto orderCreateDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -79,7 +80,7 @@ public class OrderService {
         return orderMapper.toOrderResponseDto(orderRepository.save(order));
     }
 
-    //for manager
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Transactional
     public OrderResponseDto updateStatus(UUID orderId, OrderStatusUpdateDto orderStatusUpdateDto) {
         Order currentOrder = orderRepository.findById(orderId).orElseThrow(() ->
@@ -89,7 +90,7 @@ public class OrderService {
         return orderMapper.toOrderResponseDto(orderRepository.save(currentOrder));
     }
 
-    // for admin
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void delete(UUID orderId) {
 

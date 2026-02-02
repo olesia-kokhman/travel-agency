@@ -23,13 +23,13 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping // admin
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> createUser(@Valid @RequestBody UserCreateDto userCreateDto) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is successfully created",
                userService.createUser(userCreateDto) ));
     }
 
-    @PatchMapping("/{user_id}")
+    @PatchMapping("/{user_id}") // admin
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> updateUser(
             @PathVariable("user_id") UUID userId,
             @Valid @RequestBody UserAccessUpdateDto userAccessUpdateDto) {
@@ -37,20 +37,20 @@ public class UserController {
                 userService.updateUser(userId, userAccessUpdateDto)));
     }
 
-    @DeleteMapping("/{user_id}")
+    @DeleteMapping("/{user_id}") // admin
     public ResponseEntity<ApiSuccessResponse<Void>> deleteUser(@PathVariable("user_id") UUID userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is successfully deleted",
                 null));
     }
 
-    @GetMapping("/{user_id}")
+    @GetMapping("/{user_id}") //admin
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> getUser(@PathVariable("user_id") UUID userId) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is successfully read",
                 userService.getById(userId)));
     }
 
-    @GetMapping
+    @GetMapping // admin
     public ResponseEntity<ApiSuccessResponse<List<UserResponseDto>>> getAllUsers() {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Users are successfully read",
                 userService.getAll()));

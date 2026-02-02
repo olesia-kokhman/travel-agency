@@ -3,6 +3,9 @@ package com.epam.finaltask.model.entity;
 import com.epam.finaltask.model.enums.PaymentMethod;
 import com.epam.finaltask.model.enums.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -11,6 +14,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Payment extends AuditableEntity {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
