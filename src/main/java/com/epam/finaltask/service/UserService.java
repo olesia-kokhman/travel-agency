@@ -52,6 +52,14 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    @PreAuthorize("#userId == authentication.principal.id")
+    @Transactional(readOnly = true)
+    public UserResponseDto getMe(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        return userMapper.toDto(user);
+    }
+
     @Transactional
     public UserResponseDto register(RegisterRequestDto userRegisterDto) {
 

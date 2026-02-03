@@ -3,6 +3,8 @@ package com.epam.finaltask.dto.user;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,4 +33,9 @@ public class UserUpdateProfileDto {
             message = "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 digit"
     )
     private String password;
+
+    @NotNull(message = "Balance is required")
+    @DecimalMin(value = "0.00", message = "Balance cannot be negative")
+    @Digits(integer = 17, fraction = 2, message = "Balance must have up to 17 digits and 2 decimals")
+    private BigDecimal balance;
 }

@@ -59,7 +59,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> getMe(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Me is successfully read",
-                userService.getById(userDetails.getId())));
+                userService.getMe(userDetails.getId())));
     }
 
     @PatchMapping("/me")

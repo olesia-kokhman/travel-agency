@@ -3,21 +3,22 @@ package com.epam.finaltask.service;
 import com.epam.finaltask.dto.order.OrderCreateDto;
 import com.epam.finaltask.dto.order.OrderResponseDto;
 import com.epam.finaltask.dto.order.OrderStatusUpdateDto;
+import com.epam.finaltask.exception.BusinessValidationException;
 import com.epam.finaltask.exception.ResourceNotFoundException;
 import com.epam.finaltask.exception.UserNotFoundException;
 import com.epam.finaltask.mapper.OrderMapper;
 import com.epam.finaltask.model.entity.Order;
+import com.epam.finaltask.model.entity.Tour;
 import com.epam.finaltask.model.entity.User;
 import com.epam.finaltask.model.enums.OrderStatus;
 import com.epam.finaltask.repository.OrderRepository;
+import com.epam.finaltask.repository.TourRepository;
 import com.epam.finaltask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
+import org.springframework.transaction.annotation.Transactional;;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
+    private final TourRepository tourRepository;
 
     @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")
     @Transactional(readOnly = true)
@@ -70,12 +72,28 @@ public class OrderService {
     @Transactional
     public OrderResponseDto create(UUID userId, OrderCreateDto orderCreateDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Tour tour = tourRepository.findById(orderCreateDto.getTourId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tour", orderCreateDto.getTourId()));
 
-        Order order = orderMapper.toOrder(orderCreateDto);
-        order.setOrderNumber("some-number"); // need to change
-        order.setTotalAmount(BigDecimal.ZERO); // need to change
-        order.setStatus(OrderStatus.REGISTERED);
+        if (!tour.isActive()) {
+            throw new BusinessValidationException("Tour is inactive");
+        }
+
+        Integer capacity = tour.getCapacity();
+        if (capacity == null || capacity <= 0) {
+            throw new BusinessValidationException("No available seats for this tour");
+        }
+        tour.setCapacity(capacity - 1);
+
+        String orderNumber = generateUniqueOrderNumber();
+
+        Order order = new Order();
+        order.setOrderNumber("ORD-" + tour.getId());
+
+        order.setTour(tour);
         order.setUser(user);
+        order.setTotalAmount(tour.getPrice());
+        order.setStatus(OrderStatus.REGISTERED);
 
         return orderMapper.toOrderResponseDto(orderRepository.save(order));
     }
@@ -100,6 +118,50 @@ public class OrderService {
             throw new ResourceNotFoundException("Order", orderId);
         }
 
+    }
+
+    /**
+     * Формат: ORD-YYYYMMDD-HHMMSS-<6 символів>
+     * Приклад: ORD-20260203-084512-A1B2C3
+     *
+     * Унікальність практично гарантована за рахунок часу + random,
+     * плюс є check в репозиторії на всякий випадок.
+     */
+    private String generateUniqueOrderNumber() {
+        final int maxAttempts = 10;
+
+        for (int i = 0; i < maxAttempts; i++) {
+            String candidate = generateOrderNumberCandidate();
+            if (!orderRepository.existsByOrderNumber(candidate)) {
+                return candidate;
+            }
+        }
+
+        // якщо раптом божевільний збіг 10 разів — фолбек на UUID
+        return "ORD-" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase();
+    }
+
+    private String generateOrderNumberCandidate() {
+        String date = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
+
+        String time = java.time.LocalTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("HHmmss"));
+
+        String rand = randomBase36Upper(6);
+
+        return "ORD-" + date + "-" + time + "-" + rand;
+    }
+
+    private String randomBase36Upper(int len) {
+        // безпечно для генерації ID (на відміну від Random)
+        java.security.SecureRandom sr = new java.security.SecureRandom();
+        final char[] alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(alphabet[sr.nextInt(alphabet.length)]);
+        }
+        return sb.toString();
     }
 
 }
