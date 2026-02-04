@@ -25,6 +25,4 @@ public class PaymentResponseDto {
 
     private String failureReason;
     private UUID orderId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

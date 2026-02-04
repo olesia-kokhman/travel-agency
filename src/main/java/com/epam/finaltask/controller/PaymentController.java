@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,17 +34,22 @@ public class PaymentController {
     @GetMapping("/me/orders/{orderId}")
     public ResponseEntity<ApiSuccessResponse<PaymentResponseDto>> getPayment(
             @AuthenticationPrincipal UserDetailsImpl principal,
-            @PathVariable UUID orderId
-    ) {
+            @PathVariable UUID orderId) {
         PaymentResponseDto result = paymentService.getPayment(principal.getId(), orderId);
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Payment is successfully fetched", result));
     }
 
     @GetMapping("orders/{orderId}")
     public ResponseEntity<ApiSuccessResponse<PaymentResponseDto>> getPayment(
-            @PathVariable UUID orderId
-    ) {
+            @PathVariable UUID orderId) {
         PaymentResponseDto result = paymentService.getPayment(orderId);
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Payment is successfully fetched", result));
     }
+
+    @GetMapping("/users/{userId}/payments")
+    public ResponseEntity<ApiSuccessResponse<List<PaymentResponseDto>>> getAllByUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Payments are successfully fetched",
+                paymentService.getAllByUser(userId)));
+    }
+
 }

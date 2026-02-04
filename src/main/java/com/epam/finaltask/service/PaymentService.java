@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -86,5 +87,12 @@ public class PaymentService {
         }
         return paymentMapper.toPaymentResponseDto(payment);
     }
+
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @Transactional(readOnly = true)
+    public List<PaymentResponseDto> getAllByUser(UUID userId) {
+        return paymentRepository.findAllByUserId(userId).stream().map(paymentMapper::toPaymentResponseDto).toList();
+    }
+
 
 }

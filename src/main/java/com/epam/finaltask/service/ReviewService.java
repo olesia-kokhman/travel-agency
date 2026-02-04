@@ -37,6 +37,12 @@ public class ReviewService {
                 .toList();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> getAllByUser(UUID userId) {
+        return reviewRepository.findAllByUserId(userId).stream().map(reviewMapper::toReviewResponseDto).toList();
+    }
+
     // for user
     @PreAuthorize("#userId == authentication.principal.id")
     @Transactional

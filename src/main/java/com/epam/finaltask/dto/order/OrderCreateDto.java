@@ -13,7 +13,4 @@ public class OrderCreateDto {
 
     @NotNull(message = "Tour id is required")
     private UUID tourId;
-
-
-    //private Set<UUID> tourExtraIds;
 }

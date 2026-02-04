@@ -49,4 +49,12 @@ public class ReviewController {
         List<ReviewResponseDto> reviews = reviewService.getAllByTour(tourId);
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Reviews list", reviews));
     }
+
+    @GetMapping("/users/{userId}/reviews")
+    public ResponseEntity<ApiSuccessResponse<List<ReviewResponseDto>>> getAllByUser(
+            @PathVariable UUID userId) {
+        List<ReviewResponseDto> reviews = reviewService.getAllByUser(userId);
+        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Reviews list", reviews));
+    }
+
 }

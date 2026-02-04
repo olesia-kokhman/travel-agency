@@ -1,6 +1,7 @@
 package com.epam.finaltask.controller;
 
 import com.epam.finaltask.dto.ApiSuccessResponse;
+import com.epam.finaltask.dto.order.AdminOrderResponseDto;
 import com.epam.finaltask.dto.order.OrderCreateDto;
 import com.epam.finaltask.dto.order.OrderResponseDto;
 import com.epam.finaltask.dto.order.OrderStatusUpdateDto;
@@ -23,7 +24,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping // admin
-    public ResponseEntity<ApiSuccessResponse<List<OrderResponseDto>>> getAllOrders() {
+    public ResponseEntity<ApiSuccessResponse<List<AdminOrderResponseDto>>> getAllOrders() {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE", orderService.getAll()));
     }
 
@@ -40,7 +41,7 @@ public class OrderController {
     }
 
     @GetMapping("/{order_id}") // for admin
-    public ResponseEntity<ApiSuccessResponse<OrderResponseDto>> getOrderById(@PathVariable("order_id") UUID orderId) {
+    public ResponseEntity<ApiSuccessResponse<AdminOrderResponseDto>> getOrderById(@PathVariable("order_id") UUID orderId) {
         return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "MESSAGE",
                orderService.getById(orderId)));
     }

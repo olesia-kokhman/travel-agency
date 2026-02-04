@@ -1,5 +1,6 @@
 package com.epam.finaltask.service;
 
+import com.epam.finaltask.dto.order.AdminOrderResponseDto;
 import com.epam.finaltask.dto.order.OrderCreateDto;
 import com.epam.finaltask.dto.order.OrderResponseDto;
 import com.epam.finaltask.dto.order.OrderStatusUpdateDto;
@@ -11,6 +12,7 @@ import com.epam.finaltask.model.entity.Order;
 import com.epam.finaltask.model.entity.Tour;
 import com.epam.finaltask.model.entity.User;
 import com.epam.finaltask.model.enums.OrderStatus;
+import com.epam.finaltask.model.helpers.OrderNumberGenerator;
 import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.TourRepository;
 import com.epam.finaltask.repository.UserRepository;
@@ -30,6 +32,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
     private final TourRepository tourRepository;
+    private final OrderNumberGenerator orderNumberGenerator;
 
     @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")
     @Transactional(readOnly = true)
@@ -44,8 +47,8 @@ public class OrderService {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Transactional(readOnly = true)
-    public List<OrderResponseDto> getAll() {
-        return orderRepository.findAll().stream().map(orderMapper::toOrderResponseDto).toList();
+    public List<AdminOrderResponseDto> getAll() {
+        return orderRepository.findAll().stream().map(orderMapper::toAdminOrderResponseDto).toList();
     }
 
     @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")
@@ -63,8 +66,8 @@ public class OrderService {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Transactional(readOnly = true)
-    public OrderResponseDto getById(UUID orderId) {
-        return orderMapper.toOrderResponseDto(orderRepository.findById(orderId).orElseThrow(() ->
+    public AdminOrderResponseDto getById(UUID orderId) {
+        return orderMapper.toAdminOrderResponseDto(orderRepository.findById(orderId).orElseThrow(() ->
                 new ResourceNotFoundException("Order", orderId)));
     }
 
@@ -85,10 +88,8 @@ public class OrderService {
         }
         tour.setCapacity(capacity - 1);
 
-        String orderNumber = generateUniqueOrderNumber();
-
         Order order = new Order();
-        order.setOrderNumber("ORD-" + tour.getId());
+        order.setOrderNumber(orderNumberGenerator.generateUniqueOrderNumber());
 
         order.setTour(tour);
         order.setUser(user);
@@ -118,50 +119,6 @@ public class OrderService {
             throw new ResourceNotFoundException("Order", orderId);
         }
 
-    }
-
-    /**
-     * Формат: ORD-YYYYMMDD-HHMMSS-<6 символів>
-     * Приклад: ORD-20260203-084512-A1B2C3
-     *
-     * Унікальність практично гарантована за рахунок часу + random,
-     * плюс є check в репозиторії на всякий випадок.
-     */
-    private String generateUniqueOrderNumber() {
-        final int maxAttempts = 10;
-
-        for (int i = 0; i < maxAttempts; i++) {
-            String candidate = generateOrderNumberCandidate();
-            if (!orderRepository.existsByOrderNumber(candidate)) {
-                return candidate;
-            }
-        }
-
-        // якщо раптом божевільний збіг 10 разів — фолбек на UUID
-        return "ORD-" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase();
-    }
-
-    private String generateOrderNumberCandidate() {
-        String date = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
-
-        String time = java.time.LocalTime.now()
-                .format(java.time.format.DateTimeFormatter.ofPattern("HHmmss"));
-
-        String rand = randomBase36Upper(6);
-
-        return "ORD-" + date + "-" + time + "-" + rand;
-    }
-
-    private String randomBase36Upper(int len) {
-        // безпечно для генерації ID (на відміну від Random)
-        java.security.SecureRandom sr = new java.security.SecureRandom();
-        final char[] alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(alphabet[sr.nextInt(alphabet.length)]);
-        }
-        return sb.toString();
     }
 
 }

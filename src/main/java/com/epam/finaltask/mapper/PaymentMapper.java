@@ -4,11 +4,15 @@ import com.epam.finaltask.dto.payment.PaymentRequestDto;
 import com.epam.finaltask.dto.payment.PaymentResponseDto;
 import com.epam.finaltask.model.entity.Payment;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
     Payment toPayment(PaymentRequestDto paymentRequestDto);
+
+    @Mapping(target = "orderId", source = "order.id")
     PaymentResponseDto toPaymentResponseDto(Payment payment);
+
     void updateFromPaymentDto(PaymentRequestDto paymentRequestDto, @MappingTarget Payment payment);
 }
