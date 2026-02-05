@@ -1,6 +1,11 @@
 package com.epam.finaltask.exception;
 
-import com.epam.finaltask.dto.ApiErrorResponse;
+import com.epam.finaltask.dto.apiresponse.ApiErrorResponse;
+import com.epam.finaltask.dto.apiresponse.FieldErrorDto;
+import com.epam.finaltask.exception.exceptions.EmailAlreadyExistsException;
+import com.epam.finaltask.exception.exceptions.GeneralApiException;
+import com.epam.finaltask.exception.exceptions.ResourceNotFoundException;
+import com.epam.finaltask.exception.exceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +23,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({UserNotFoundException.class, ResourceNotFoundException.class})
     public ResponseEntity<ApiErrorResponse> handleNotFound(GeneralApiException exception,
-                                                               HttpServletRequest request) {
+                                                           HttpServletRequest request) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         mapFields(apiErrorResponse, exception, request);
 
-        apiErrorResponse.setStatus(HttpStatus.NOT_FOUND.value());
-        apiErrorResponse.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
+        apiErrorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+        apiErrorResponse.setErrorMessage(HttpStatus.NOT_FOUND.getReasonPhrase());
         apiErrorResponse.setFieldErrors(null);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiErrorResponse);
@@ -36,8 +41,8 @@ public class GlobalExceptionHandler {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         mapFields(apiErrorResponse, exception, request);
 
-        apiErrorResponse.setStatus(HttpStatus.CONFLICT.value());
-        apiErrorResponse.setError(HttpStatus.CONFLICT.getReasonPhrase());
+        apiErrorResponse.setStatusCode(HttpStatus.CONFLICT.value());
+        apiErrorResponse.setErrorMessage(HttpStatus.CONFLICT.getReasonPhrase());
         apiErrorResponse.setFieldErrors(null);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiErrorResponse);
@@ -48,14 +53,14 @@ public class GlobalExceptionHandler {
                                                                             HttpServletRequest request) {
 
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
-        apiErrorResponse.setMessage(exception.getMessage());
+        apiErrorResponse.setFailureReason(exception.getMessage());
         apiErrorResponse.setErrorCode("AUTH_BAD_CREDENTIALS");
 
         apiErrorResponse.setPath(request.getRequestURI());
         apiErrorResponse.setMethod(request.getMethod());
 
-        apiErrorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        apiErrorResponse.setError(HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        apiErrorResponse.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        apiErrorResponse.setErrorMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase());
         apiErrorResponse.setFieldErrors(null);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiErrorResponse);
@@ -65,11 +70,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleClassCast(ClassCastException exception, HttpServletRequest request) {
 
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
-        apiErrorResponse.setMessage("Internal authentication error");
+        apiErrorResponse.setFailureReason("Internal authentication error");
         apiErrorResponse.setErrorCode("AUTH_INTERNAL");
 
-        apiErrorResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        apiErrorResponse.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        apiErrorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        apiErrorResponse.setErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
 
         apiErrorResponse.setFieldErrors(null);
 
@@ -83,14 +88,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
                                                                          HttpServletRequest request) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
-        apiErrorResponse.setMessage("Validation failed");
+        apiErrorResponse.setFailureReason("Validation failed");
         apiErrorResponse.setErrorCode("FIELD_VALIDATION_ERROR");
 
         apiErrorResponse.setPath(request.getRequestURI());
         apiErrorResponse.setMethod(request.getMethod());
 
-        apiErrorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        apiErrorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        apiErrorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        apiErrorResponse.setErrorMessage(HttpStatus.BAD_REQUEST.getReasonPhrase());
 
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 
@@ -126,7 +131,7 @@ public class GlobalExceptionHandler {
                                        GeneralApiException exception,
                                        HttpServletRequest request) {
 
-        apiErrorResponse.setMessage(exception.getMessage());
+        apiErrorResponse.setFailureReason(exception.getMessage());
         apiErrorResponse.setErrorCode(exception.getErrorCode());
 
         apiErrorResponse.setPath(request.getRequestURI());

@@ -1,15 +1,14 @@
-package com.epam.finaltask.dto;
+package com.epam.finaltask.dto.apiresponse;
 
-import com.epam.finaltask.exception.FieldErrorDto;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class ApiErrorResponse {
-    private int status;
-    private String error;
-    private String message;
+    private int statusCode;
+    private String errorMessage;
+    private String failureReason;
     private String path;
     private String method;
 

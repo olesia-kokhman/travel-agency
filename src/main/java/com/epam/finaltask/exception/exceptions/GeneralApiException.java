@@ -1,4 +1,4 @@
-package com.epam.finaltask.exception;
+package com.epam.finaltask.exception.exceptions;
 
 public abstract class GeneralApiException extends RuntimeException {
     private final String errorCode;

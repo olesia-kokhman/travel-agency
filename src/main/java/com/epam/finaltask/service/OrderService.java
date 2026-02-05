@@ -4,9 +4,9 @@ import com.epam.finaltask.dto.order.AdminOrderResponseDto;
 import com.epam.finaltask.dto.order.OrderCreateDto;
 import com.epam.finaltask.dto.order.OrderResponseDto;
 import com.epam.finaltask.dto.order.OrderStatusUpdateDto;
-import com.epam.finaltask.exception.BusinessValidationException;
-import com.epam.finaltask.exception.ResourceNotFoundException;
-import com.epam.finaltask.exception.UserNotFoundException;
+import com.epam.finaltask.exception.exceptions.BusinessValidationException;
+import com.epam.finaltask.exception.exceptions.ResourceNotFoundException;
+import com.epam.finaltask.exception.exceptions.UserNotFoundException;
 import com.epam.finaltask.mapper.OrderMapper;
 import com.epam.finaltask.model.entity.Order;
 import com.epam.finaltask.model.entity.Tour;
@@ -16,12 +16,17 @@ import com.epam.finaltask.model.helpers.OrderNumberGenerator;
 import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.TourRepository;
 import com.epam.finaltask.repository.UserRepository;
+import com.epam.finaltask.repository.specifications.OrderSpecification;
+import com.epam.finaltask.repository.specifications.filters.OrderFilter;
+import com.epam.finaltask.util.PageableUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,21 +39,31 @@ public class OrderService {
     private final TourRepository tourRepository;
     private final OrderNumberGenerator orderNumberGenerator;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Transactional(readOnly = true)
+    public Page<AdminOrderResponseDto> getAll(OrderFilter filter, Pageable pageable) {
+        Pageable effectivePageable = PageableUtils.withDefaultSort(pageable);
+
+        Page<Order> page = orderRepository.findAll(OrderSpecification.build(filter), effectivePageable);
+        return page.map(orderMapper::toAdminOrderResponseDto);
+    }
+
     @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")
     @Transactional(readOnly = true)
-    public List<OrderResponseDto> getAll(UUID userId) {
-        if(!userRepository.existsById(userId)) {
+    public Page<OrderResponseDto> getAllByUser(UUID userId, OrderFilter filter, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
-        List<Order> orders = orderRepository.findAllByUserId(userId);
-        return orders.stream().map(orderMapper::toOrderResponseDto).toList();
+        Pageable effectivePageable = PageableUtils.withDefaultSort(pageable);
+
+        Page<Order> page = orderRepository.findAll(
+                OrderSpecification.build(filter).and(byUserId(userId)), effectivePageable);
+        return page.map(orderMapper::toOrderResponseDto);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Transactional(readOnly = true)
-    public List<AdminOrderResponseDto> getAll() {
-        return orderRepository.findAll().stream().map(orderMapper::toAdminOrderResponseDto).toList();
+    private static Specification<Order> byUserId(UUID userId) {
+        return (root, query, cb) -> cb.equal(root.get("user").get("id"), userId);
     }
 
     @PreAuthorize("#userId == authentication.principal.id or hasAnyRole('ADMIN','MANAGER')")

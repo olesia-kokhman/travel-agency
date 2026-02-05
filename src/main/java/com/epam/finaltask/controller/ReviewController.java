@@ -1,6 +1,6 @@
 package com.epam.finaltask.controller;
 
-import com.epam.finaltask.dto.ApiSuccessResponse;
+import com.epam.finaltask.dto.apiresponse.ApiSuccessResponse;
 import com.epam.finaltask.dto.review.ReviewCreateDto;
 import com.epam.finaltask.dto.review.ReviewResponseDto;
 import com.epam.finaltask.dto.review.ReviewUpdateDto;
@@ -29,7 +29,7 @@ public class ReviewController {
             @Valid @RequestBody ReviewCreateDto dto) {
 
         ReviewResponseDto created = reviewService.createReview(userDetails.getId(), orderId, dto);
-        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Review created", created));
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Review created", created));
     }
 
     @PatchMapping("/reviews/{reviewId}")
@@ -39,7 +39,7 @@ public class ReviewController {
             @Valid @RequestBody ReviewUpdateDto dto) {
 
         ReviewResponseDto updated = reviewService.updateReview(user.getId(), reviewId, dto);
-        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Review updated", updated));
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Review updated", updated));
     }
 
 
@@ -47,14 +47,14 @@ public class ReviewController {
     public ResponseEntity<ApiSuccessResponse<List<ReviewResponseDto>>> getAllByTour(
             @PathVariable UUID tourId) {
         List<ReviewResponseDto> reviews = reviewService.getAllByTour(tourId);
-        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Reviews list", reviews));
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Reviews list", reviews));
     }
 
     @GetMapping("/users/{userId}/reviews")
     public ResponseEntity<ApiSuccessResponse<List<ReviewResponseDto>>> getAllByUser(
             @PathVariable UUID userId) {
         List<ReviewResponseDto> reviews = reviewService.getAllByUser(userId);
-        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "Reviews list", reviews));
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Reviews list", reviews));
     }
 
 }

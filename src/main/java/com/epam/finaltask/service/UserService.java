@@ -2,14 +2,21 @@ package com.epam.finaltask.service;
 
 import com.epam.finaltask.auth.dto.RegisterRequestDto;
 import com.epam.finaltask.dto.user.*;
-import com.epam.finaltask.exception.EmailAlreadyExistsException;
-import com.epam.finaltask.exception.UserNotFoundException;
+import com.epam.finaltask.exception.exceptions.EmailAlreadyExistsException;
+import com.epam.finaltask.exception.exceptions.UserNotFoundException;
 import com.epam.finaltask.mapper.UserMapper;
 import com.epam.finaltask.model.entity.Order;
 import com.epam.finaltask.model.entity.User;
 import com.epam.finaltask.model.enums.UserRole;
 import com.epam.finaltask.repository.UserRepository;
+import com.epam.finaltask.repository.specifications.UserSpecification;
+import com.epam.finaltask.repository.specifications.filters.UserFilter;
+import com.epam.finaltask.util.PageableUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,8 +48,12 @@ public class UserService {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Transactional(readOnly = true)
-    public List<UserResponseDto> getAll() {
-        return userRepository.findAll().stream().map(userMapper::toDto).toList();
+    public Page<UserResponseDto> getAll(UserFilter filter, Pageable pageable) {
+
+        Pageable effectivePageable = PageableUtils.withDefaultSort(pageable);
+
+        Page<User> page = userRepository.findAll(UserSpecification.build(filter), effectivePageable);
+        return page.map(userMapper::toDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

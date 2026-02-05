@@ -1,7 +1,7 @@
 package com.epam.finaltask.auth;
 
 import com.epam.finaltask.auth.dto.*;
-import com.epam.finaltask.exception.EmailAlreadyExistsException;
+import com.epam.finaltask.exception.exceptions.EmailAlreadyExistsException;
 import com.epam.finaltask.security.UserDetailsImpl;
 import com.epam.finaltask.security.jwt.JwtService;
 import com.epam.finaltask.service.UserService;

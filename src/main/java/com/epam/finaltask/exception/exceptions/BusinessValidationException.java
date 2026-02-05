@@ -1,4 +1,4 @@
-package com.epam.finaltask.exception;
+package com.epam.finaltask.exception.exceptions;
 
 public class BusinessValidationException extends GeneralApiException {
 

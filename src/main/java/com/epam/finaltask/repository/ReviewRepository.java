@@ -1,7 +1,9 @@
 package com.epam.finaltask.repository;
 
 import com.epam.finaltask.model.entity.Review;
+import com.epam.finaltask.model.entity.Tour;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

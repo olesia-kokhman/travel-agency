@@ -2,9 +2,9 @@ package com.epam.finaltask.service;
 
 import com.epam.finaltask.dto.payment.PaymentRequestDto;
 import com.epam.finaltask.dto.payment.PaymentResponseDto;
-import com.epam.finaltask.exception.BusinessValidationException;
-import com.epam.finaltask.exception.ResourceNotFoundException;
-import com.epam.finaltask.exception.UserAccessDeniedException;
+import com.epam.finaltask.exception.exceptions.BusinessValidationException;
+import com.epam.finaltask.exception.exceptions.ResourceNotFoundException;
+import com.epam.finaltask.exception.exceptions.UserAccessDeniedException;
 import com.epam.finaltask.mapper.PaymentMapper;
 import com.epam.finaltask.model.entity.Order;
 import com.epam.finaltask.model.entity.Payment;
@@ -12,7 +12,15 @@ import com.epam.finaltask.model.enums.OrderStatus;
 import com.epam.finaltask.model.enums.PaymentStatus;
 import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.PaymentRepository;
+import com.epam.finaltask.repository.specifications.PaymentSpecification;
+import com.epam.finaltask.repository.specifications.filters.PaymentFilter;
+import com.epam.finaltask.util.PageableUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static com.epam.finaltask.util.PageableUtils.withDefaultSort;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +69,7 @@ public class PaymentService {
     }
 
     @PreAuthorize("#userId == authentication.principal.id")
-    @Transactional // for user
+    @Transactional(readOnly = true)
     public PaymentResponseDto getPayment(UUID userId, UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
 
@@ -77,7 +87,7 @@ public class PaymentService {
     }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
-    @Transactional // for admin
+    @Transactional(readOnly = true) // for admin
     public PaymentResponseDto getPayment(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
         Payment payment = order.getPayment();
@@ -90,8 +100,27 @@ public class PaymentService {
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Transactional(readOnly = true)
-    public List<PaymentResponseDto> getAllByUser(UUID userId) {
-        return paymentRepository.findAllByUserId(userId).stream().map(paymentMapper::toPaymentResponseDto).toList();
+    public Page<PaymentResponseDto> getAllByUser(UUID userId, PaymentFilter filter, Pageable pageable) {
+
+        Pageable effectivePageable = PageableUtils.withDefaultSort(pageable);
+
+        Page<Payment> page = paymentRepository.findAll(
+                PaymentSpecification.build(filter).and(byUserId(userId)),
+                effectivePageable
+        );
+
+        return page.map(paymentMapper::toPaymentResponseDto);
+    }
+
+    private static Specification<Payment> byUserId(UUID userId) {
+        return (root, query, cb) -> cb.equal(root.get("order").get("user").get("id"), userId);
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @Transactional(readOnly = true)
+    public Page<PaymentResponseDto> getAll(PaymentFilter filter, Pageable pageable) {
+        Page<Payment> page = paymentRepository.findAll(PaymentSpecification.build(filter), pageable);
+        return page.map(paymentMapper::toPaymentResponseDto);
     }
 
 

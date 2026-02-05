@@ -1,7 +1,7 @@
 package com.epam.finaltask.auth;
 
 import com.epam.finaltask.auth.dto.*;
-import com.epam.finaltask.dto.ApiSuccessResponse;
+import com.epam.finaltask.dto.apiresponse.ApiSuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiSuccessResponse<JwtResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is logged in",
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "User is logged in",
                 authenticationService.login(requestDto)));
     }
 
     @PostMapping("/register")
     public ResponseEntity<ApiSuccessResponse<JwtResponseDto>> register(@Valid @RequestBody RegisterRequestDto requestDto) {
         authenticationService.register(requestDto);
-        return ResponseEntity.ok(new ApiSuccessResponse<>("OK", "User is registered",
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "User is registered",
                 null));
     }
 

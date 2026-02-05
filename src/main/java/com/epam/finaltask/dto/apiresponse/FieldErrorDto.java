@@ -1,4 +1,4 @@
-package com.epam.finaltask.exception;
+package com.epam.finaltask.dto.apiresponse;
 
 import lombok.Data;
 
