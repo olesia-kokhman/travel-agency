@@ -2,12 +2,14 @@ package com.epam.finaltask.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @MappedSuperclass
 @Getter
+@Setter
 public abstract class AuditableEntity {
 
     @Id

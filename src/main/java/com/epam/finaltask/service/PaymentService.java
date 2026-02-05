@@ -100,21 +100,10 @@ public class PaymentService {
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Transactional(readOnly = true)
-    public Page<PaymentResponseDto> getAllByUser(UUID userId, PaymentFilter filter, Pageable pageable) {
-
-        Pageable effectivePageable = PageableUtils.withDefaultSort(pageable);
-
-        Page<Payment> page = paymentRepository.findAll(
-                PaymentSpecification.build(filter).and(byUserId(userId)),
-                effectivePageable
-        );
-
-        return page.map(paymentMapper::toPaymentResponseDto);
+    public List<PaymentResponseDto> getAllByUser(UUID userId) {
+        return paymentRepository.findAllByUserId(userId).stream().map(paymentMapper::toPaymentResponseDto).toList();
     }
 
-    private static Specification<Payment> byUserId(UUID userId) {
-        return (root, query, cb) -> cb.equal(root.get("order").get("user").get("id"), userId);
-    }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Transactional(readOnly = true)

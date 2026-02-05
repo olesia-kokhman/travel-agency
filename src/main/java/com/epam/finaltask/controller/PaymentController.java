@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -52,13 +53,9 @@ public class PaymentController {
     }
 
     @GetMapping("/users/{userId}/payments")
-    public ResponseEntity<ApiPageResponse<PaymentResponseDto>> getAllByUser(
-            @PathVariable UUID userId,
-            @Valid @ModelAttribute PaymentFilter filter,
-            Pageable pageable
-    ) {
-        Page<PaymentResponseDto> page = paymentService.getAllByUser(userId, filter, pageable);
-        return ResponseEntity.ok(ApiPageResponse.from(page, 200, "Payments are successfully fetched"));
+    public ResponseEntity<ApiSuccessResponse<List<PaymentResponseDto>>> getAllByUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Payments are successfully fetched",
+                paymentService.getAllByUser(userId)));
     }
 
     @GetMapping
