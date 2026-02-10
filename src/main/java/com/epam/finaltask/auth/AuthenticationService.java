@@ -5,8 +5,6 @@ import com.epam.finaltask.exception.exceptions.EmailAlreadyExistsException;
 import com.epam.finaltask.security.UserDetailsImpl;
 import com.epam.finaltask.security.UserDetailsServiceImpl;
 import com.epam.finaltask.security.jwt.JwtService;
-import com.epam.finaltask.service.LoginRateLimitService;
-import com.epam.finaltask.service.RefreshTokenService;
 import com.epam.finaltask.service.UserService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.epam.finaltask.service;
+package com.epam.finaltask.auth;
 
 import com.epam.finaltask.exception.exceptions.TooManyLoginAttemptsException;
 import com.epam.finaltask.repository.LoginRateLimitRepository;

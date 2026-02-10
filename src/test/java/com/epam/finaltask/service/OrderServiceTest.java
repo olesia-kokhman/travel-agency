@@ -9,7 +9,7 @@ import com.epam.finaltask.model.entity.Order;
 import com.epam.finaltask.model.entity.Tour;
 import com.epam.finaltask.model.entity.User;
 import com.epam.finaltask.model.enums.OrderStatus;
-import com.epam.finaltask.model.helpers.OrderNumberGenerator;
+import com.epam.finaltask.util.OrderNumberGenerator;
 import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.TourRepository;
 import com.epam.finaltask.repository.UserRepository;

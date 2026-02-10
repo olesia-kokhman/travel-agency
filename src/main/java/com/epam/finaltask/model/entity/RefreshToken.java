@@ -1,5 +1,7 @@
 package com.epam.finaltask.model.entity;
 
+import com.epam.finaltask.model.entity.AuditableEntity;
+import com.epam.finaltask.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

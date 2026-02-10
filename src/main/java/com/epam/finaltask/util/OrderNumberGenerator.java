@@ -1,4 +1,4 @@
-package com.epam.finaltask.model.helpers;
+package com.epam.finaltask.util;
 
 import com.epam.finaltask.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
