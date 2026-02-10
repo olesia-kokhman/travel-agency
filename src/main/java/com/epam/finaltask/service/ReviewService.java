@@ -13,6 +13,7 @@ import com.epam.finaltask.model.enums.OrderStatus;
 import com.epam.finaltask.repository.OrderRepository;
 import com.epam.finaltask.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -65,7 +67,15 @@ public class ReviewService {
         Review review = reviewMapper.toReview(reviewCreateDto);
         review.setOrder(order);
 
-        return reviewMapper.toReviewResponseDto(reviewRepository.save(review));
+        Review saved = reviewRepository.save(review);
+
+        log.info("BUSINESS reviewCreated reviewId={} orderId={} tourId={} userId={}",
+                saved.getId(),
+                orderId,
+                order.getTour().getId(),
+                userId);
+
+        return reviewMapper.toReviewResponseDto(saved);
     }
 
     // for user
@@ -81,7 +91,14 @@ public class ReviewService {
         }
 
         reviewMapper.updateFromReviewDto(reviewUpdateDto, review);
-        return reviewMapper.toReviewResponseDto(reviewRepository.save(review));
+        Review saved = reviewRepository.save(review);
+
+        log.info("BUSINESS reviewUpdated reviewId={} userId={} orderId={} tourId={}",
+                saved.getId(),
+                userId,
+                saved.getOrder().getId(),
+                saved.getOrder().getTour().getId());
+        return reviewMapper.toReviewResponseDto(saved);
     }
 
 

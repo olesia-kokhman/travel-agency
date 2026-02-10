@@ -13,6 +13,7 @@ import com.epam.finaltask.repository.specifications.UserSpecification;
 import com.epam.finaltask.repository.specifications.filters.UserFilter;
 import com.epam.finaltask.util.PageableUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -93,7 +95,13 @@ public class UserService {
                 balance,
                 role,
                 orders);
-        return userMapper.toDto(userRepository.save(user));
+
+        User saved = userRepository.save(user);
+
+        log.info("BUSINESS userRegistered userId={} email={} role={} active={}",
+                saved.getId(), saved.getEmail(), saved.getRole(), saved.isActive());
+
+        return userMapper.toDto(saved);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -114,21 +122,43 @@ public class UserService {
                 userCreateDto.getRole(),
                 new ArrayList<>());
 
-        return userMapper.toDto(userRepository.save(user));
+        User saved = userRepository.save(user);
+
+        log.info("BUSINESS userCreatedByAdmin userId={} email={} role={} active={}",
+                saved.getId(), saved.getEmail(), saved.getRole(), saved.isActive());
+
+        return userMapper.toDto(saved);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public UserResponseDto updateUser(UUID userId, UserAccessUpdateDto userAccessUpdateDto) {
         User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        boolean oldActive = currentUser.isActive();
+        UserRole oldRole = currentUser.getRole();
+        BigDecimal oldBalance = currentUser.getBalance();
+
         userMapper.updateAccessFromDto(userAccessUpdateDto, currentUser);
-        return userMapper.toDto(userRepository.save(currentUser));
+        User saved = userRepository.save(currentUser);
+
+        log.info("BUSINESS userAccessUpdated userId={} active:{}->{} role:{}->{} balance:{}->{}",
+                userId,
+                oldActive, saved.isActive(),
+                oldRole, saved.getRole(),
+                oldBalance, saved.getBalance()
+        );
+
+        return userMapper.toDto(saved);
     }
 
     @PreAuthorize("#userId == authentication.principal.id")
     @Transactional
     public UserResponseDto updateProfile(UUID userId, UserUpdateProfileDto userUpdateProfileDto) {
         User currentUser = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        String oldEmail = currentUser.getEmail();
+        String oldPhone = currentUser.getPhoneNumber();
+        boolean passwordChanged = (userUpdateProfileDto.getPassword() != null && !userUpdateProfileDto.getPassword().isBlank());
 
         String newEmail = userUpdateProfileDto.getEmail();
         if (newEmail != null && !newEmail.equalsIgnoreCase(currentUser.getEmail())) {
@@ -144,7 +174,17 @@ public class UserService {
             currentUser.setPassword(passwordEncoder.encode(userUpdateProfileDto.getPassword()));
         }
 
-        return userMapper.toDto(userRepository.save(currentUser));
+        User saved = userRepository.save(currentUser);
+
+        log.info("BUSINESS userProfileUpdated userId={} email:{}->{} phone:{}->{} passwordChanged={}",
+                userId,
+                oldEmail, saved.getEmail(),
+                oldPhone, saved.getPhoneNumber(),
+                passwordChanged
+        );
+
+
+        return userMapper.toDto(saved);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -153,6 +193,7 @@ public class UserService {
 
         if(userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
+            log.info("BUSINESS userDeleted userId={}", userId);
         } else {
             throw new UserNotFoundException(userId);
         }

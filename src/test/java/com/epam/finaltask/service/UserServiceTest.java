@@ -141,7 +141,7 @@ class UserServiceTest {
 
         when(userRepository.existsByEmail(req.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(req.getPassword())).thenReturn("ENC");
-        
+
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
         User saved = new User();

@@ -20,6 +20,7 @@ import com.epam.finaltask.repository.specifications.OrderSpecification;
 import com.epam.finaltask.repository.specifications.filters.OrderFilter;
 import com.epam.finaltask.util.PageableUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -111,7 +113,18 @@ public class OrderService {
         order.setTotalAmount(tour.getPrice());
         order.setStatus(OrderStatus.REGISTERED);
 
-        return orderMapper.toOrderResponseDto(orderRepository.save(order));
+        Order savedOrder = orderRepository.save(order);
+        log.info("BUSINESS orderCreated orderId={} orderNumber={} userId={} tourId={} total={} status={} seatsLeft={}",
+                savedOrder.getId(),
+                savedOrder.getOrderNumber(),
+                userId,
+                tour.getId(),
+                savedOrder.getTotalAmount(),
+                savedOrder.getStatus(),
+                tour.getCapacity()
+        );
+
+        return orderMapper.toOrderResponseDto(savedOrder);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -121,19 +134,22 @@ public class OrderService {
                 new ResourceNotFoundException("Order", orderId));
 
         currentOrder.setStatus(orderStatusUpdateDto.getStatus());
-        return orderMapper.toOrderResponseDto(orderRepository.save(currentOrder));
+        Order savedOrder = orderRepository.save(currentOrder);
+        log.info("BUSINESS orderStatusChanged orderId={} from={} to={}",
+                savedOrder.getId(), currentOrder.getStatus(), orderStatusUpdateDto.getStatus());
+
+        return orderMapper.toOrderResponseDto(savedOrder);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void delete(UUID orderId) {
-
         try {
             orderRepository.deleteById(orderId);
-        } catch (EmptyResultDataAccessException exception) {
+            log.info("BUSINESS orderDeleted orderId={}", orderId);
+        } catch (EmptyResultDataAccessException ex) {
             throw new ResourceNotFoundException("Order", orderId);
         }
-
     }
 
 }

@@ -13,12 +13,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -31,29 +33,43 @@ public class UserController {
 
     @PostMapping // admin
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> createUser(@Valid @RequestBody UserCreateDto userCreateDto) {
-        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "User is successfully created",
-               userService.createUser(userCreateDto) ));
+        UserResponseDto created = userService.createUser(userCreateDto);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .body(new ApiSuccessResponse<>(201, "User created successfully.", created));
     }
 
     @PatchMapping("/{user_id}") // admin
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> updateUser(
             @PathVariable("user_id") UUID userId,
             @Valid @RequestBody UserAccessUpdateDto userAccessUpdateDto) {
-        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "User is successfully updated",
-                userService.updateUser(userId, userAccessUpdateDto)));
+        UserResponseDto updated = userService.updateUser(userId, userAccessUpdateDto);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiSuccessResponse<>(200, "User updated successfully.", updated));
     }
 
     @DeleteMapping("/{user_id}") // admin
     public ResponseEntity<ApiSuccessResponse<Void>> deleteUser(@PathVariable("user_id") UUID userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "User is successfully deleted",
-                null));
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{user_id}") //admin
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> getUser(@PathVariable("user_id") UUID userId) {
-        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "User is successfully read",
-                userService.getById(userId)));
+        UserResponseDto dto = userService.getById(userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiSuccessResponse<>(200, "User fetched successfully.", dto));
     }
 
     @GetMapping // admin
@@ -61,23 +77,31 @@ public class UserController {
             @Valid @ModelAttribute UserFilter filter,
             Pageable pageable) {
         Page<UserResponseDto> page = userService.getAll(filter, pageable);
-        return ResponseEntity.ok(ApiPageResponse.from(page, 200, "Users are successfully read"));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiPageResponse.from(page, 200, "Users fetched successfully."));
     }
 
 
     @GetMapping("/me")
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> getMe(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Me is successfully read",
-                userService.getMe(userDetails.getId())));
+        UserResponseDto dto = userService.getMe(userDetails.getId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiSuccessResponse<>(200, "Profile fetched successfully.", dto));
     }
 
     @PatchMapping("/me")
     public ResponseEntity<ApiSuccessResponse<UserResponseDto>> updateUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody UserUpdateProfileDto userUpdateProfileDto) {
+        UserResponseDto updated = userService.updateProfile(userDetails.getId(), userUpdateProfileDto);
 
-        return ResponseEntity.ok(new ApiSuccessResponse<>(200,  "User is successfully updated",
-                userService.updateProfile(userDetails.getId(), userUpdateProfileDto)));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiSuccessResponse<>(200, "Profile updated successfully.", updated));
     }
 
 }

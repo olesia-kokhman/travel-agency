@@ -16,6 +16,7 @@ import com.epam.finaltask.repository.specifications.PaymentSpecification;
 import com.epam.finaltask.repository.specifications.filters.PaymentFilter;
 import com.epam.finaltask.util.PageableUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ import static com.epam.finaltask.util.PageableUtils.withDefaultSort;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -56,6 +58,8 @@ public class PaymentService {
             throw new BusinessValidationException("Payment already exists for this order");
         }
 
+        OrderStatus oldStatus = order.getStatus();
+
         Payment payment = paymentMapper.toPayment(paymentRequestDto);
         payment.setOrder(order);
         payment.setStatus(PaymentStatus.SUCCESS);
@@ -64,8 +68,22 @@ public class PaymentService {
 
         order.setStatus(OrderStatus.PAID);
         orderRepository.save(order);
+        Payment savedPayment = paymentRepository.save(payment);
 
-        return paymentMapper.toPaymentResponseDto(paymentRepository.save(payment));
+        log.info("BUSINESS paymentCreated paymentId={} orderId={} userId={} amount={} status={} paidAt={}",
+                savedPayment.getId(),
+                orderId,
+                userId,
+                order.getTotalAmount(),
+                savedPayment.getStatus(),
+                savedPayment.getPaidAt()
+        );
+
+        log.info("BUSINESS orderStatusChangedByPayment orderId={} from={} to={}",
+                orderId, oldStatus, OrderStatus.PAID
+        );
+
+        return paymentMapper.toPaymentResponseDto(savedPayment);
     }
 
     @PreAuthorize("#userId == authentication.principal.id")

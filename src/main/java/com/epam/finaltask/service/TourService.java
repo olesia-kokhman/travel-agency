@@ -11,6 +11,7 @@ import com.epam.finaltask.repository.TourRepository;
 import com.epam.finaltask.repository.specifications.TourSpecification;
 import com.epam.finaltask.repository.specifications.filters.TourFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TourService {
 
     private final TourRepository tourRepository;
@@ -54,7 +56,17 @@ public class TourService {
     @Transactional
     public TourResponseDto create(TourCreateDto tourCreateDto) {
         Tour tour = tourMapper.toTour(tourCreateDto);
-        return tourMapper.toTourResponseDto(tourRepository.save(tour));
+
+        Tour saved = tourRepository.save(tour);
+
+        log.info("BUSINESS tourCreated tourId={} title={} price={} active={} hot={}",
+                saved.getId(),
+                saved.getTitle(),
+                saved.getPrice(),
+                saved.isActive(),
+                saved.isHot());
+
+        return tourMapper.toTourResponseDto(saved);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -63,7 +75,10 @@ public class TourService {
         Tour currentTour = tourRepository.findById(tourId).orElseThrow(() -> new ResourceNotFoundException("Tour", tourId));
 
         tourMapper.updateTourFromDto(tourUpdateDto, currentTour);
-        return tourMapper.toTourResponseDto(tourRepository.save(currentTour));
+
+        Tour saved = tourRepository.save(currentTour);
+        log.info("BUSINESS tourUpdated tourId={}", saved.getId());
+        return tourMapper.toTourResponseDto(saved);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -71,6 +86,7 @@ public class TourService {
     public void delete(UUID tourId) {
         try {
             tourRepository.deleteById(tourId);
+            log.info("BUSINESS tourDeleted tourId={}", tourId);
         } catch (EmptyResultDataAccessException exception) {
             throw new ResourceNotFoundException("Tour", tourId);
         }
@@ -81,7 +97,13 @@ public class TourService {
     public TourResponseDto updateHot(UUID tourId, TourHotUpdateDto tourHotUpdateDto) {
         Tour currentTour = tourRepository.findById(tourId).orElseThrow(() -> new ResourceNotFoundException("Tour", tourId));
         currentTour.setHot(tourHotUpdateDto.isHot());
-        return tourMapper.toTourResponseDto(tourRepository.save(currentTour));
+
+        Tour saved = tourRepository.save(currentTour);
+
+        log.info("BUSINESS tourHotChanged tourId={} from={} to={}",
+                tourId, currentTour, saved.isHot());
+
+        return tourMapper.toTourResponseDto(saved);
     }
 
 
