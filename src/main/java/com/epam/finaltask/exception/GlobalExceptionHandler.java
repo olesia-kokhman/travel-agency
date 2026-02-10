@@ -2,10 +2,7 @@ package com.epam.finaltask.exception;
 
 import com.epam.finaltask.dto.apiresponse.ApiErrorResponse;
 import com.epam.finaltask.dto.apiresponse.FieldErrorDto;
-import com.epam.finaltask.exception.exceptions.EmailAlreadyExistsException;
-import com.epam.finaltask.exception.exceptions.GeneralApiException;
-import com.epam.finaltask.exception.exceptions.ResourceNotFoundException;
-import com.epam.finaltask.exception.exceptions.UserNotFoundException;
+import com.epam.finaltask.exception.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +17,20 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    @ExceptionHandler(TooManyLoginAttemptsException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotFound(TooManyLoginAttemptsException exception,
+                                                           HttpServletRequest request) {
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        mapFields(apiErrorResponse, exception, request);
+
+        apiErrorResponse.setStatusCode(HttpStatus.TOO_MANY_REQUESTS.value());
+        apiErrorResponse.setErrorMessage(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase());
+        apiErrorResponse.setFieldErrors(null);
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(apiErrorResponse);
+    }
 
     @ExceptionHandler({UserNotFoundException.class, ResourceNotFoundException.class})
     public ResponseEntity<ApiErrorResponse> handleNotFound(GeneralApiException exception,

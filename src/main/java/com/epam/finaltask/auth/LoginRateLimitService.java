@@ -3,6 +3,7 @@ package com.epam.finaltask.auth;
 import com.epam.finaltask.exception.exceptions.TooManyLoginAttemptsException;
 import com.epam.finaltask.repository.LoginRateLimitRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginRateLimitService {
 
     private static final int LIMIT = 5;
@@ -21,11 +23,22 @@ public class LoginRateLimitService {
     @Transactional
     public void assertAllowed(String rawEmail) {
         String email = normalize(rawEmail);
-        if (email == null) return;
+        if (email == null) {
+            log.debug("LOGIN RATE-LIMIT: skip because email is null/blank");
+            return;
+        }
 
-        Integer attempts = loginRateLimitRepository.hitAndReturnAttempts(email, LocalDateTime.now(), WINDOW_SECONDS);
+        Integer attempts = loginRateLimitRepository.hitAndReturnAttempts(
+                email, LocalDateTime.now(), WINDOW_SECONDS
+        );
+
+        log.debug("LOGIN RATE-LIMIT: email={} attempts={} limit={} windowSec={}",
+                email, attempts, LIMIT, WINDOW_SECONDS);
+
         if (attempts != null && attempts > LIMIT) {
-            throw new TooManyLoginAttemptsException("Too many login attempts. Try again later.");
+            log.warn("LOGIN RATE-LIMIT BLOCK: email={} attempts={} limit={} windowSec={}",
+                    email, attempts, LIMIT, WINDOW_SECONDS);
+            throw new TooManyLoginAttemptsException();
         }
     }
 

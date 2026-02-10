@@ -1,65 +1,75 @@
-//package com.epam.finaltask.logging;
-//
-//import jakarta.servlet.http.HttpServletRequest;
-//import lombok.extern.slf4j.Slf4j;
-//import org.aspectj.lang.JoinPoint;
-//import org.aspectj.lang.annotation.*;
-//import org.springframework.stereotype.Component;
-//import org.springframework.web.context.request.RequestContextHolder;
-//import org.springframework.web.context.request.ServletRequestAttributes;
-//
-//import java.util.Arrays;
-//
-//@Component
-//@Aspect
-//@Slf4j
-//public class LoggingAspect {
-//
-//    @Pointcut("execution(public * com.epam.finaltask.controller.*.*(..))")
-//    public void controllerLog() {
-//
-//    }
-//
-//    @Pointcut("execution(public * com.epam.finaltask.service.*.*(..))")
-//    public void serviceLog() {
-//
-//    }
-//
-//    @Before("controllerLog()")
-//    public void doBeforeController(JoinPoint joinPoint) {
-//        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-//        HttpServletRequest httpServletRequest = null;
-//        if(servletRequestAttributes != null) {
-//            log.info("NEW REQUEST: IP: {},\nURL: {},\nHTTP_METHOD: {},\nCONTROLLER_METHOD: {}.{}\n",
-//                    httpServletRequest.getRemoteAddr(),
-//                    httpServletRequest.getRequestURL().toString(),
-//                    httpServletRequest.getMethod(),
-//                    joinPoint.getSignature().getDeclaringTypeName(),
-//                    joinPoint.getSignature().getName());
-//        }
-//    }
-//
-//    @Before("serviceLog()")
-//    public void doBeforeService(JoinPoint joinPoint) {
-//        String className = joinPoint.getSignature().getDeclaringTypeName();
-//        String methodName = joinPoint.getSignature().getName();
-//
-//        Object[] args = joinPoint.getArgs();
-//        String argsString = args.length > 0 ? Arrays.toString(args) : "METHOD HAS NO ARGUMENTS";
-//
-//        log.info("RUN SERVICE: SERVICE_METHOD: {}.{}\nMETHOD_ARGUMENTS: [{}]\n", className, methodName, argsString);
-//    }
-//
-//    @AfterReturning(returning = "returnObject", pointcut = "controllerLog()")
-//    public void doAfterReturning(Object returnObject) {
-//        log.info("RETURN_VALUE: {}\n", returnObject);
-//    }
-//
-//    @After("controllerLog()")
-//    public void doAfter(JoinPoint joinPoint) {
-//        log.info("Controller method executed successfully: {}.{}",
-//                joinPoint.getSignature().getDeclaringTypeName(),
-//                joinPoint.getSignature().getName());
-//    }
-//
-//}
+package com.epam.finaltask.logging;
+
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+
+@Component
+@Aspect
+@Slf4j
+public class LoggingAspect {
+
+    @Pointcut("within(com.epam.finaltask.service..*)")
+    public void serviceLog() {}
+
+    @Pointcut("within(com.epam.finaltask.auth..*)")
+    public void securityLog() {}
+
+    @Around("serviceLog()")
+    public Object logServiceExecution(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        String className = proceedingJoinPoint.getSignature().getDeclaringTypeName();
+        String methodName = proceedingJoinPoint.getSignature().getName();
+
+        Object[] args = proceedingJoinPoint.getArgs();
+        String argsString = args.length > 0 ? Arrays.toString(args) : "METHOD HAS NO ARGUMENTS";
+
+        long start = System.nanoTime();
+        log.info("SERVICE IN  {}.{} args={}", className, methodName, argsString);
+
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            long tookMs = (System.nanoTime() - start) / 1_000_000;
+
+            log.info("SERVICE OUT {}.{} tookMs={} resultType={}",
+                    className, methodName, tookMs,
+                    (result == null ? "null" : result.getClass().getSimpleName())
+            );
+            return result;
+        } catch (Throwable exception) {
+            long tookMs = (System.nanoTime() - start) / 1_000_000;
+
+            log.error("SERVICE ERR {}.{} tookMs={} exType={} msg={}",
+                    className, methodName, tookMs,
+                    exception.getClass().getSimpleName(),
+                    exception.getMessage());
+            throw exception;
+        }
+    }
+
+    @Around("securityLog()")
+    public Object logSecurityExecution(ProceedingJoinPoint pjp) throws Throwable {
+        String className = pjp.getSignature().getDeclaringTypeName();
+        String methodName = pjp.getSignature().getName();
+
+        long start = System.nanoTime();
+        log.debug("SECURITY IN  {}.{}", className, methodName);
+
+        try {
+            Object result = pjp.proceed();
+            long tookMs = (System.nanoTime() - start) / 1_000_000;
+
+            log.debug("SECURITY OUT {}.{} tookMs={}", className, methodName, tookMs);
+            return result;
+        } catch (Throwable ex) {
+            long tookMs = (System.nanoTime() - start) / 1_000_000;
+
+            log.warn("SECURITY ERR {}.{} tookMs={} exType={}",
+                    className, methodName, tookMs,
+                    ex.getClass().getSimpleName());
+            throw ex;
+        }
+    }
+}

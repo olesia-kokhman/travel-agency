@@ -1,11 +1,9 @@
 package com.epam.finaltask.exception.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+public class TooManyLoginAttemptsException extends GeneralApiException {
 
-@ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-public class TooManyLoginAttemptsException extends RuntimeException {
-    public TooManyLoginAttemptsException(String message) {
-        super(message);
+    public TooManyLoginAttemptsException() {
+        super("Provided user has no access to the resource", "TOO_MANY_REQUESTS");
     }
+
 }
