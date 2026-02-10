@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260210_006_01_add-login-attempts-limit-table" author="olesia">
+        <createTable tableName="login_rate_limits">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp"/>
+
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="window_start" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="attempts" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="login_rate_limits"
+                             columnNames="email"
+                             constraintName="uk_login_rate_limits_email"/>
+
+        <createIndex tableName="login_rate_limits" indexName="idx_login_rate_limits_email">
+            <column name="email"/>
+        </createIndex>
+
+        <createIndex tableName="login_rate_limits" indexName="idx_login_rate_limits_updated_at">
+            <column name="updated_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

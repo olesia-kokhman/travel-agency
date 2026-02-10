@@ -61,6 +61,10 @@ public class JwtService {
                 .compact();
     }
 
+    public Date extractExpiration(String token) {
+        return parseClaims(token).getExpiration();
+    }
+
     public boolean validateToken(String token, UserDetailsImpl userDetails) {
         try {
             Claims claims = parseClaims(token);

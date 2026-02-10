@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://www.liquibase.org/xml/ns/dbchangelog
+          https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260210_004_01_add-refresh-token-table" author="olesia">
+        <createTable tableName="refresh_tokens">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="token_hash" type="varchar(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="revoked" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="revoked_at" type="timestamp"/>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="refresh_tokens"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_refresh_tokens_user"
+                onDelete="CASCADE"/>
+
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_token_hash">
+            <column name="token_hash"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

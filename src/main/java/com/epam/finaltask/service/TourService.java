@@ -12,7 +12,6 @@ import com.epam.finaltask.repository.specifications.TourSpecification;
 import com.epam.finaltask.repository.specifications.filters.TourFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -84,12 +83,14 @@ public class TourService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void delete(UUID tourId) {
-        try {
-            tourRepository.deleteById(tourId);
-            log.info("BUSINESS tourDeleted tourId={}", tourId);
-        } catch (EmptyResultDataAccessException exception) {
-            throw new ResourceNotFoundException("Tour", tourId);
-        }
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tour", tourId));
+
+        tour.setActive(false);
+        tourRepository.save(tour);
+
+
+        log.info("BUSINESS tourDeactivated tourId={}", tourId);
     }
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")

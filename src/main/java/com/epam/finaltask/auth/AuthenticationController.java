@@ -32,12 +32,14 @@ public class AuthenticationController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiSuccessResponse<JwtResponseDto>> refresh(@Valid @RequestBody RefreshRequestDto requestDto) {
-        return null;
+        JwtResponseDto dto = authenticationService.refresh(requestDto);
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Token refreshed", dto));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiSuccessResponse<Void>> logout(@Valid @RequestBody LogoutRequestDto requestDto) {
-        return null;
+    public ResponseEntity<ApiSuccessResponse<Void>> logout(@Valid @RequestBody RefreshRequestDto requestDto) {
+        authenticationService.logout(requestDto);
+        return ResponseEntity.ok(new ApiSuccessResponse<>(200, "Logged out", null));
     }
 
 }
